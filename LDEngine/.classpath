@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
+	<classpathentry kind="lib" path="libs/libs/lwjgl-glfw.jar" sourcepath="libs/sources/lwjgl-glfw-sources.jar">
+		<attributes>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="LDEngine/libs/naitives/windows"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="libs/libs/lwjgl-jawt.jar" sourcepath="libs/sources/lwjgl-jawt-sources.jar">
+		<attributes>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="LDEngine/libs/naitives/windows"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="libs/libs/lwjgl-jemalloc.jar" sourcepath="libs/sources/lwjgl-jemalloc-sources.jar">
+		<attributes>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="LDEngine/libs/naitives/windows"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="libs/libs/lwjgl-openal.jar" sourcepath="libs/sources/lwjgl-openal-sources.jar">
+		<attributes>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="LDEngine/libs/naitives/windows"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="libs/libs/lwjgl-opencl.jar" sourcepath="libs/sources/lwjgl-opencl-sources.jar">
+		<attributes>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="LDEngine/libs/naitives/windows"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="libs/libs/lwjgl-opengl.jar" sourcepath="libs/sources/lwjgl-opengl-sources.jar">
+		<attributes>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="LDEngine/libs/naitives/windows"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="libs/libs/lwjgl-vulkan.jar" sourcepath="libs/sources/lwjgl-vulkan-sources.jar">
+		<attributes>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="LDEngine/libs/naitives/windows"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="libs/libs/lwjgl.jar" sourcepath="libs/sources/lwjgl-sources.jar">
+		<attributes>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="LDEngine/libs/naitives/windows"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
