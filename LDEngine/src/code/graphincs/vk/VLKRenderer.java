@@ -2,7 +2,12 @@ package code.graphincs.vk;
 
 import static org.lwjgl.glfw.GLFW.*;
 
+import code.graphincs.Model;
+import code.graphincs.Renderable;
 import code.graphincs.Renderer;
+import code.graphincs.Shader;
+import code.graphincs.Texture;
+import code.math.Vector2f;
 import code.math.Vector4f;
 
 public class VLKRenderer extends Renderer{
@@ -30,5 +35,21 @@ public class VLKRenderer extends Renderer{
 	
 	public void destory() {
 		VLK.destroyContext(context);
+	}
+	
+	public Model createModel(float[] data) {
+		return null;
+	}
+
+	public Shader createShader(String vertPath, String fragPath) {
+		return null;
+	}
+	
+	public Texture createTexture(String path) {
+		return null;
+	}
+	
+	public Renderable createRenderable(Vector2f pos, Vector2f size, Texture texture) {
+		return null;
 	}
 }

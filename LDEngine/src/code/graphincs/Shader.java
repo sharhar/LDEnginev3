@@ -1,11 +1,12 @@
 package code.graphincs;
 
-abstract public class Model {
-	public float[] data;
+abstract public class Shader {
+	protected String vertPath, fragPath;
 	protected Renderer renderer;
 	
-	public Model(Renderer renderer, float[] data) {
-		this.data = data;
+	public Shader(Renderer renderer, String vertPath, String fragPath) {
+		this.vertPath = vertPath;
+		this.fragPath = fragPath;
 		this.renderer = renderer;
 		
 		init();
@@ -14,5 +15,4 @@ abstract public class Model {
 	abstract protected void init();
 	abstract public void bind();
 	abstract public void unbind();
-	abstract public void draw();
 }
