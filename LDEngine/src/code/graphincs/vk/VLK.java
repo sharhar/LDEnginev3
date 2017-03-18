@@ -1,12 +1,11 @@
-package code;
+package code.graphincs.vk;
 
 import org.lwjgl.PointerBuffer;
-import org.lwjgl.glfw.*;
 import org.lwjgl.vulkan.*;
 
-import java.nio.*;
+import code.math.Vector4f;
 
-import javax.imageio.stream.MemoryCacheImageInputStream;
+import java.nio.*;
 
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.glfw.GLFWVulkan.*;
@@ -44,6 +43,8 @@ public class VLK {
 		public long commandPool;
 		public VkQueue queue;
 		public VkCommandBuffer commandBuffer;
+		
+		public PointerBuffer pCommandBuffers = memAllocPointer(1);
 	}
 
 	public static class VLKSwapChain {
@@ -55,6 +56,11 @@ public class VLK {
 		public long[] imageViews;
 		public long[] framebuffers;
 		public long renderPass;
+		
+		LongBuffer pSwapchains = memAllocLong(1);
+        LongBuffer pImageAcquiredSemaphore = memAllocLong(1);
+        LongBuffer pRenderCompleteSemaphore = memAllocLong(1);
+        IntBuffer pImageIndex = memAllocInt(1);
 	}
 
 	public static VLKContext createContext(boolean debug) {
@@ -124,6 +130,10 @@ public class VLK {
 		return context;
 	}
 
+	public static void destroyContext(VLKContext context) {
+		vkDestroyDebugReportCallbackEXT(context.instance, context.debug, null);
+	}
+	
 	public static VLKDevice createDevice(VLKContext context) {
 		VLKDevice device = new VLKDevice();
 
@@ -214,6 +224,8 @@ public class VLK {
 		cmdBufAllocateInfo.free();
 		device.commandBuffer = new VkCommandBuffer(pCommandBuffer.get(0), device.device);
 		memFree(pCommandBuffer);
+		
+		device.pCommandBuffers.put(0, device.commandBuffer);
 
 		return device;
 	}
@@ -537,4 +549,158 @@ public class VLK {
 		return swapChain;
 	}
 	
+	public static void clear(VLKDevice device, VLKSwapChain swapChain, Vector4f color) {
+		// Info struct to create a semaphore
+        VkSemaphoreCreateInfo semaphoreCreateInfo = VkSemaphoreCreateInfo.calloc()
+                .sType(VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO)
+                .pNext(NULL)
+                .flags(VLK.VK_FLAGS_NONE);
+		
+        VkCommandBufferBeginInfo cmdBufInfo = VkCommandBufferBeginInfo.calloc()
+	                .sType(VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO)
+	                .pNext(NULL);
+        
+        // Specify clear color (cornflower blue)
+	    VkClearValue.Buffer clearValues = VkClearValue.calloc(1);
+	    clearValues.color()
+	                .float32(0, color.x)
+	                .float32(1, color.y)
+	                .float32(2, color.z)
+	                .float32(3, color.w);
+		
+		// Specify everything to begin a render pass
+        VkRenderPassBeginInfo renderPassBeginInfo = VkRenderPassBeginInfo.calloc()
+                .sType(VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO)
+                .pNext(NULL)
+                .renderPass(swapChain.renderPass)
+                .pClearValues(clearValues);
+        VkRect2D renderArea = renderPassBeginInfo.renderArea();
+        renderArea.offset()
+                .x(0)
+                .y(0);
+        renderArea.extent()
+                .width(800)
+                .height(600);
+        
+        vkCreateSemaphore(device.device, semaphoreCreateInfo, null, swapChain.pImageAcquiredSemaphore);
+        vkCreateSemaphore(device.device, semaphoreCreateInfo, null, swapChain.pRenderCompleteSemaphore);
+		
+        vkAcquireNextImageKHR(device.device, swapChain.swapChain, VLK.UINT64_MAX, swapChain.pImageAcquiredSemaphore.get(0), VK_NULL_HANDLE, swapChain.pImageIndex);
+        
+        renderPassBeginInfo.framebuffer(swapChain.framebuffers[swapChain.pImageIndex.get(0)]);
+        
+        vkBeginCommandBuffer(device.commandBuffer, cmdBufInfo);
+        
+        VkImageMemoryBarrier.Buffer postPresentBarrier = VkImageMemoryBarrier.calloc(1)
+                .sType(VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER)
+                .pNext(NULL)
+                .srcAccessMask(0)
+                .dstAccessMask(VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT)
+                .oldLayout(VK_IMAGE_LAYOUT_PRESENT_SRC_KHR)
+                .newLayout(VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL)
+                .srcQueueFamilyIndex(VK_QUEUE_FAMILY_IGNORED)
+                .dstQueueFamilyIndex(VK_QUEUE_FAMILY_IGNORED);
+        postPresentBarrier.subresourceRange()
+                .aspectMask(VK_IMAGE_ASPECT_COLOR_BIT)
+                .baseMipLevel(0)
+                .levelCount(1)
+                .baseArrayLayer(0)
+                .layerCount(1);
+        postPresentBarrier.image(swapChain.images[swapChain.pImageIndex.get(0)]);
+        vkCmdPipelineBarrier(
+            device.commandBuffer,
+            VK_PIPELINE_STAGE_ALL_COMMANDS_BIT,
+            VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
+            VLK.VK_FLAGS_NONE,
+            null, // No memory barriers,
+            null, // No buffer barriers,
+            postPresentBarrier); // one image barrier
+        postPresentBarrier.free();
+        
+        vkCmdBeginRenderPass(device.commandBuffer, renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
+        
+        VkViewport.Buffer viewport = VkViewport.calloc(1)
+                .height(600)
+                .width(800)
+                .minDepth(0.0f)
+                .maxDepth(1.0f);
+        vkCmdSetViewport(device.commandBuffer, 0, viewport);
+        viewport.free();
+
+        VkRect2D.Buffer scissor = VkRect2D.calloc(1);
+        scissor.extent()
+                .width(800)
+                .height(600);
+        scissor.offset()
+                .x(0)
+                .y(0);
+        vkCmdSetScissor(device.commandBuffer, 0, scissor);
+        scissor.free();
+
+	}
+	
+	public static void swap(VLKDevice device, VLKSwapChain swapChain) {
+		vkCmdEndRenderPass(device.commandBuffer);
+        
+        VkImageMemoryBarrier.Buffer prePresentBarrier = VkImageMemoryBarrier.calloc(1)
+                .sType(VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER)
+                .pNext(NULL)
+                .srcAccessMask(VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT)
+                .dstAccessMask(0)
+                .oldLayout(VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL)
+                .newLayout(VK_IMAGE_LAYOUT_PRESENT_SRC_KHR)
+                .srcQueueFamilyIndex(VK_QUEUE_FAMILY_IGNORED)
+                .dstQueueFamilyIndex(VK_QUEUE_FAMILY_IGNORED);
+        prePresentBarrier.subresourceRange()
+                .aspectMask(VK_IMAGE_ASPECT_COLOR_BIT)
+                .baseMipLevel(0)
+                .levelCount(1)
+                .baseArrayLayer(0)
+                .layerCount(1);
+        prePresentBarrier.image(swapChain.images[swapChain.pImageIndex.get(0)]);
+        vkCmdPipelineBarrier(device.commandBuffer,
+            VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+            VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
+            VLK.VK_FLAGS_NONE,
+            null, // No memory barriers
+            null, // No buffer memory barriers
+            prePresentBarrier); // One image memory barrier
+        prePresentBarrier.free();
+        
+        vkEndCommandBuffer(device.commandBuffer);
+        
+        // Info struct to submit a command buffer which will wait on the semaphore
+        IntBuffer pWaitDstStageMask = memAllocInt(1);
+        pWaitDstStageMask.put(0, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
+        VkSubmitInfo submitInfo = VkSubmitInfo.calloc()
+                .sType(VK_STRUCTURE_TYPE_SUBMIT_INFO)
+                .pNext(NULL)
+                .waitSemaphoreCount(swapChain.pImageAcquiredSemaphore.remaining())
+                .pWaitSemaphores(swapChain.pImageAcquiredSemaphore)
+                .pWaitDstStageMask(pWaitDstStageMask)
+                .pCommandBuffers(device.pCommandBuffers)
+                .pSignalSemaphores(swapChain.pRenderCompleteSemaphore);
+
+        
+        
+        vkQueueSubmit(device.queue, submitInfo, VK_NULL_HANDLE);
+        
+        swapChain.pSwapchains.put(0, swapChain.swapChain);
+        
+        // Info struct to present the current swapchain image to the display
+        VkPresentInfoKHR presentInfo = VkPresentInfoKHR.calloc()
+                .sType(VK_STRUCTURE_TYPE_PRESENT_INFO_KHR)
+                .pNext(NULL)
+                .pWaitSemaphores(swapChain.pRenderCompleteSemaphore)
+                .swapchainCount(swapChain.pSwapchains.remaining())
+                .pSwapchains(swapChain.pSwapchains)
+                .pImageIndices(swapChain.pImageIndex)
+                .pResults(null);
+        vkQueuePresentKHR(device.queue, presentInfo);
+        
+        vkQueueWaitIdle(device.queue);
+        
+        vkDestroySemaphore(device.device, swapChain.pImageAcquiredSemaphore.get(0), null);
+        vkDestroySemaphore(device.device, swapChain.pRenderCompleteSemaphore.get(0), null);
+	}
 }
