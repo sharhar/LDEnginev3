@@ -23,7 +23,7 @@ public class GLRenderer extends Renderer{
 		glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-		window = glfwCreateWindow(width, height, title + " | Renderer: OpenGL", 0, 0);
+		window = glfwCreateWindow(width, height, title, 0, 0);
 		glfwMakeContextCurrent(window);
 		glfwSwapInterval(0);
 		GL.createCapabilities();

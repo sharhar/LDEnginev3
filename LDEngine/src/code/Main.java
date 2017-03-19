@@ -16,17 +16,21 @@ public class Main {
 	public static void main(String[] args) {
 		glfwInit();
 		
-		boolean useVulkan = false;
+		boolean useVulkan = true;
 		
 		Renderer render = null;
 		
+		String title = "LD Game | Renderer: ";
+		
 		if(useVulkan) {
+			title += "Vulkan";
 			render = new VLKRenderer();
 		} else {
+			title += "OpenGL";
 			render = new GLRenderer();
 		}
 		
-		long window = render.createWindowandContext(800, 600, "LD Game");
+		long window = render.createWindowandContext(800, 600, title);
 		
 		float verts[] = {
 				 1, -1, 1, 1,
@@ -53,6 +57,9 @@ public class Main {
 		
 		int frames = 0;
 		double time = 0;
+		int fps = 0;
+		
+		
 		
 		while(!glfwWindowShouldClose(window)) {
 			glfwPollEvents();
@@ -64,7 +71,8 @@ public class Main {
 			frames = frames + 1;
 			time = time + dt;
 			if(time >= 1) {
-				System.out.println(frames);
+				fps = frames;
+				glfwSetWindowTitle(window, title + " | FPS: " + fps);
 				frames = 0;
 				time = 0;
 			}

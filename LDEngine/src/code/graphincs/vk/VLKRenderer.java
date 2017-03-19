@@ -17,7 +17,7 @@ public class VLKRenderer extends Renderer{
 	
 	public long createWindowandContext(int width, int height, String title) {
 		glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-		window = glfwCreateWindow(width, height, title + " | Renderer: Vulkan", 0, 0);
+		window = glfwCreateWindow(width, height, title, 0, 0);
 		context = VLK.createContext(true);
 		device = VLK.createDevice(context);
 		swapChain = VLK.createSwapChain(context, device, window);
