@@ -699,9 +699,6 @@ public class VLK {
                 .pWaitDstStageMask(pWaitDstStageMask)
                 .pCommandBuffers(device.pCommandBuffers)
                 .pSignalSemaphores(swapChain.pRenderCompleteSemaphore);
-
-        
-        
         vkQueueSubmit(device.queue, submitInfo, VK_NULL_HANDLE);
         
         swapChain.pSwapchains.put(0, swapChain.swapChain);

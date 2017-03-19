@@ -17,7 +17,7 @@ public class VLKRenderer extends Renderer{
 	
 	public long createWindowandContext(int width, int height, String title) {
 		glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-		long window = glfwCreateWindow(800, 600, "LD Game", 0, 0);
+		window = glfwCreateWindow(width, height, title + " | Renderer: Vulkan", 0, 0);
 		context = VLK.createContext(true);
 		device = VLK.createDevice(context);
 		swapChain = VLK.createSwapChain(context, device, window);
@@ -46,10 +46,10 @@ public class VLKRenderer extends Renderer{
 	}
 	
 	public Texture createTexture(String path) {
-		return null;
+		return new VLKTexture(this, path);
 	}
 	
-	public Renderable createRenderable(Vector2f pos, Vector2f size, Texture texture) {
-		return null;
+	public Renderable createRenderable(Shader shader, Vector2f pos, Vector2f size, Texture texture) {
+		return new VLKRenderable(this, shader, pos, size, texture);
 	}
 }

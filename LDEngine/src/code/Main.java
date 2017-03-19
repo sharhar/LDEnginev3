@@ -16,7 +16,7 @@ public class Main {
 	public static void main(String[] args) {
 		glfwInit();
 		
-		boolean useVulkan = true;
+		boolean useVulkan = false;
 		
 		Renderer render = null;
 		
@@ -40,22 +40,49 @@ public class Main {
 		
 		Model model = render.createModel(verts);
 		Shader shader = render.createShader("res/entity", "res/entity");
-		//Texture texture = render.createTexture("/TestImage.png");
-		//Renderable renderable = render.createRenderable(new Vector2f(100, 100), new Vector2f(50, 50), texture);
+		Texture texture = render.createTexture("/TestImage.png");
+		Renderable renderable = render.createRenderable(shader, new Vector2f(100, 100), new Vector2f(50, 50), texture);
+		Renderable renderable2 = render.createRenderable(shader, new Vector2f(100, 300), new Vector2f(50, 50), texture);
 		
 		Vector4f clearColor = new Vector4f(0.2f, 0.3f, 0.8f, 1);
+		
+		double st = glfwGetTime();
+		double ct = st;
+		
+		double dt = ct - st;
+		
+		int frames = 0;
+		double time = 0;
 		
 		while(!glfwWindowShouldClose(window)) {
 			glfwPollEvents();
 			
+			ct = glfwGetTime();
+			dt = ct - st;
+			st = ct;
+			
+			frames = frames + 1;
+			time = time + dt;
+			if(time >= 1) {
+				System.out.println(frames);
+				frames = 0;
+				time = 0;
+			}
+			
 			render.clear(clearColor);
 			
-			//renderable.pos.x += 1;
+			renderable.pos.x += 100 * dt;
+			renderable2.pos.x += 100 * dt;
 			
 			model.bind();
 			shader.bind();
-			//renderable.update(shader);
+			
+			renderable.applyUniforms();
 			model.draw();
+			
+			renderable2.applyUniforms();
+			model.draw();
+			
 			shader.unbind();
 			model.unbind();
 			

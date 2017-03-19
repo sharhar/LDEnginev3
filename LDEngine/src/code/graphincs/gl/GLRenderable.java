@@ -5,21 +5,28 @@ import static org.lwjgl.opengl.GL13.*;
 import static org.lwjgl.opengl.GL20.*;
 
 import code.graphincs.Renderable;
+import code.graphincs.Renderer;
 import code.graphincs.Shader;
 import code.graphincs.Texture;
 import code.math.Vector2f;
 
 public class GLRenderable extends Renderable{
-	public GLRenderable(Vector2f pos, Vector2f size, Texture texture) {
-		super(pos, size, texture);
+	
+	public GLTexture gtx;
+	public GLShader gshd;
+	
+	public GLRenderable(Renderer renderer, Shader shader, Vector2f pos, Vector2f size, Texture texture) {
+		super(renderer, shader, pos, size, texture);
 	}
-
-	public void update(Shader shader) {
-		GLShader glShader = (GLShader)shader;
-		GLTexture glTexture = (GLTexture)texture;
-		
+	
+	protected void init() {
+		gtx = (GLTexture)texture;
+		gshd = (GLShader)shader;
+	}
+	
+	public void applyUniforms() {
 		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, glTexture.tex);
+		glBindTexture(GL_TEXTURE_2D, gtx.tex);
 		
 		float[] modelview = {
 			size.x, 0, 0, 0,
@@ -28,6 +35,6 @@ public class GLRenderable extends Renderable{
 			pos.x, pos.y, 0, 1
 		};
 		
-		glUniformMatrix4fv(glShader.modelviewLoc, false, modelview);
+		glUniformMatrix4fv(gshd.modelviewLoc, false, modelview);
 	}
 }

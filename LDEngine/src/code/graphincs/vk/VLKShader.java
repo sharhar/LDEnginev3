@@ -9,14 +9,12 @@ import static org.lwjgl.vulkan.VK10.*;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.nio.LongBuffer;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 
 import org.lwjgl.BufferUtils;
-import org.lwjgl.PointerBuffer;
 import org.lwjgl.vulkan.*;
 
 public class VLKShader extends Shader {
@@ -53,17 +51,12 @@ public class VLKShader extends Shader {
 		return buffer;
 	}
 
-	long vertShader;
-	long fragShader;
-	long pipeline;
-	long layout;
-	long descriptorPool;
-	long descriptorSet;
-	long uniformmemory;
-    long uniformallocationSize;
-    long uniformbuffer;
-    long descriptorSetLayout;
-	VLKRenderer vrc;
+	public long vertShader;
+	public long fragShader;
+	public long pipeline;
+	public long layout;
+	public long descriptorSetLayout;
+	public VLKRenderer vrc;
 
 	public VLKShader(Renderer renderer, String vertPath, String fragPath) {
 		super(renderer, vertPath, fragPath);
@@ -100,64 +93,22 @@ public class VLKShader extends Shader {
 				"Failed to create shader");
 		fragShader = pShaderModule.get(0);
 		memFree(pShaderModule);
-
-		VkDescriptorPoolSize.Buffer typeCounts = VkDescriptorPoolSize.calloc(1)
-				.type(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER).descriptorCount(1);
-		VkDescriptorPoolCreateInfo descriptorPoolInfo = VkDescriptorPoolCreateInfo.calloc()
-				.sType(VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO)
-				.pNext(NULL)
-				.pPoolSizes(typeCounts)
-				.maxSets(1);
-
-		LongBuffer pDescriptorPool = memAllocLong(1);
-		VLK.VLKCheck(vkCreateDescriptorPool(vrc.device.device, descriptorPoolInfo, null, pDescriptorPool), 
-				"Failed to create descriptor pool");
-		descriptorPool = pDescriptorPool.get(0);
-		memFree(pDescriptorPool);
-		descriptorPoolInfo.free();
-		typeCounts.free();
-
-		VkBufferCreateInfo bufferInfo = VkBufferCreateInfo.calloc()
-                .sType(VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO)
-                .size(16 * 4 * 2)
-                .usage(VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);
-        LongBuffer pUniformDataVSBuffer = memAllocLong(1);
-        VLK.VLKCheck(vkCreateBuffer(vrc.device.device, bufferInfo, null, pUniformDataVSBuffer), 
-        		"Failed to create buffer");
-        uniformbuffer = pUniformDataVSBuffer.get(0);
-        memFree(pUniformDataVSBuffer);
-        bufferInfo.free();
-		
-        VkMemoryRequirements memReqs = VkMemoryRequirements.calloc();
-        vkGetBufferMemoryRequirements(vrc.device.device, uniformbuffer, memReqs);
-        uniformallocationSize = memReqs.size();
-        int memoryTypeBits = memReqs.memoryTypeBits();
-        memReqs.free();
         
-        IntBuffer pMemoryTypeIndex = memAllocInt(1);
-        VLK.getMemoryType(vrc.device.memoryProperties, memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT, pMemoryTypeIndex);
-        int memoryTypeIndex = pMemoryTypeIndex.get(0);
-        memFree(pMemoryTypeIndex);
-        
-        LongBuffer pUniformDataVSMemory = memAllocLong(1);
-        VkMemoryAllocateInfo allocInfo = VkMemoryAllocateInfo.calloc()
-                .sType(VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO)
-                .pNext(NULL)
-                .allocationSize(uniformallocationSize)
-                .memoryTypeIndex(memoryTypeIndex);
-        vkAllocateMemory(vrc.device.device, allocInfo, null, pUniformDataVSMemory);
-        uniformmemory = pUniformDataVSMemory.get(0);
-        memFree(pUniformDataVSMemory);
-        allocInfo.free();
-        
-        vkBindBufferMemory(vrc.device.device, uniformbuffer, uniformmemory, 0);
-        
-        VkDescriptorSetLayoutBinding.Buffer layoutBinding = VkDescriptorSetLayoutBinding.calloc(1)
+        VkDescriptorSetLayoutBinding.Buffer layoutBinding = VkDescriptorSetLayoutBinding.calloc(2);
+        layoutBinding.get(0)
                 .binding(0)
                 .descriptorType(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER)
                 .descriptorCount(1)
                 .stageFlags(VK_SHADER_STAGE_VERTEX_BIT)
                 .pImmutableSamplers(null);
+        
+        layoutBinding.get(1)
+        		.binding(1)
+        		.descriptorType(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER)
+        		.descriptorCount(1)
+        		.stageFlags(VK_SHADER_STAGE_FRAGMENT_BIT)
+        		.pImmutableSamplers(null);
+        
         VkDescriptorSetLayoutCreateInfo descriptorLayout = VkDescriptorSetLayoutCreateInfo.calloc()
                 .sType(VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO)
                 .pNext(NULL)
@@ -171,59 +122,9 @@ public class VLKShader extends Shader {
         descriptorLayout.free();
         layoutBinding.free();
         
-        pDescriptorSetLayout = memAllocLong(1);
-        pDescriptorSetLayout.put(0, descriptorSetLayout);
-        VkDescriptorSetAllocateInfo descAllocInfo = VkDescriptorSetAllocateInfo.calloc()
-                .sType(VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO)
-                .descriptorPool(descriptorPool)
-                .pSetLayouts(pDescriptorSetLayout);
-
-        LongBuffer pDescriptorSet = memAllocLong(1);
-        VLK.VLKCheck(vkAllocateDescriptorSets(vrc.device.device, descAllocInfo, pDescriptorSet), 
-        		"Failed to allocate descriptor set");
-        descriptorSet = pDescriptorSet.get(0);
-        memFree(pDescriptorSet);
-        descAllocInfo.free();
-        memFree(pDescriptorSetLayout);
-
-        VkDescriptorBufferInfo.Buffer descriptor = VkDescriptorBufferInfo.calloc(1)
-                .buffer(uniformbuffer)
-                .range(16 * 4 * 2)
-                .offset(0);
-        
-        VkWriteDescriptorSet.Buffer writeDescriptorSet = VkWriteDescriptorSet.calloc(1)
-                .sType(VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET)
-                .dstSet(descriptorSet)
-                .descriptorType(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER)
-                .pBufferInfo(descriptor)
-                .dstBinding(0);
-        vkUpdateDescriptorSets(vrc.device.device, writeDescriptorSet, null);
-        writeDescriptorSet.free();
-        descriptor.free();
-        
-        float[] mats = {
-        		1, 0, 0, 0,
-        		0, 1, 0, 0,
-        		0, 0, 1, 0,
-        		0, 0, 0, 1,
-        		
-        		1, 0, 0, 0,
-        		0, 1, 0, 0,
-        		0, 0, 1, 0,
-        		0, 0, 0, 1
-        };
-        
-        PointerBuffer pData = memAllocPointer(1);
-        VLK.VLKCheck(vkMapMemory(vrc.device.device, uniformmemory, 0, uniformallocationSize, 0, pData), 
-        		"Failed to map memory");
-        long data = pData.get(0);
-        memFree(pData);
-        FloatBuffer matrixBuffer = memFloatBuffer(data, 16 * 2);
-        matrixBuffer.put(mats).flip();
-        vkUnmapMemory(vrc.device.device, uniformmemory);
-        
 		VkVertexInputBindingDescription.Buffer bindingDescriptor = VkVertexInputBindingDescription.calloc(1).binding(0)
-				.stride(4 * 4).inputRate(VK_VERTEX_INPUT_RATE_VERTEX);
+				.stride(4 * 4)
+				.inputRate(VK_VERTEX_INPUT_RATE_VERTEX);
 
 		VkVertexInputAttributeDescription.Buffer attributeDescriptions = VkVertexInputAttributeDescription.calloc(2);
 		attributeDescriptions.get(0).binding(0).location(0).format(VK_FORMAT_R32G32_SFLOAT).offset(0);
@@ -318,9 +219,7 @@ public class VLKShader extends Shader {
 
 	public void bind() {
 		vkCmdBindPipeline(vrc.device.commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
-		LongBuffer descriptorSets = memAllocLong(1).put(0, descriptorSet);
-		vkCmdBindDescriptorSets(vrc.device.commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, layout, 0, descriptorSets, null);
-		memFree(descriptorSets);
+		
 	}
 
 	public void unbind() {

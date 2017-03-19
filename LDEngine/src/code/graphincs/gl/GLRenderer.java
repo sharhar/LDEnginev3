@@ -23,12 +23,10 @@ public class GLRenderer extends Renderer{
 		glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-		window = glfwCreateWindow(800, 600, "LD Game", 0, 0);
+		window = glfwCreateWindow(width, height, title + " | Renderer: OpenGL", 0, 0);
 		glfwMakeContextCurrent(window);
+		glfwSwapInterval(0);
 		GL.createCapabilities();
-		
-		//glEnable(GL_CULL_FACE);
-		//glCullFace(GL_FRONT_FACE);
 		
 		return window;
 	}
@@ -58,7 +56,7 @@ public class GLRenderer extends Renderer{
 		return new GLTexture(this, path);
 	}
 	
-	public Renderable createRenderable(Vector2f pos, Vector2f size, Texture texture) {
-		return new GLRenderable(pos, size, texture);
+	public Renderable createRenderable(Shader shader, Vector2f pos, Vector2f size, Texture texture) {
+		return new GLRenderable(this, shader, pos, size, texture);
 	}
 }

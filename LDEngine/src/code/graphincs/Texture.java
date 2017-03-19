@@ -9,11 +9,10 @@ abstract public class Texture {
 	public int width = 0;
 	public int height = 0;
 	public int[] pixels = null;
+	public int[] data = null;
 	public Renderer renderer;
 	
 	public Texture(Renderer renderer, String path) {
-		int[] data = null;
-		
 		try {
 			image = ImageIO.read(Texture.class.getResourceAsStream(path));
 			width = image.getWidth();
