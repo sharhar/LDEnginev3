@@ -16,7 +16,7 @@ public class Main {
 	public static void main(String[] args) {
 		glfwInit();
 		
-		boolean useVulkan = false;
+		boolean useVulkan = true;
 		
 		Renderer render = null;
 		
@@ -40,8 +40,8 @@ public class Main {
 		
 		Model model = render.createModel(verts);
 		Shader shader = render.createShader("res/entity", "res/entity");
-		Texture texture = render.createTexture("/TestImage.png");
-		Renderable renderable = render.createRenderable(new Vector2f(100, 100), new Vector2f(50, 50), texture);
+		//Texture texture = render.createTexture("/TestImage.png");
+		//Renderable renderable = render.createRenderable(new Vector2f(100, 100), new Vector2f(50, 50), texture);
 		
 		Vector4f clearColor = new Vector4f(0.2f, 0.3f, 0.8f, 1);
 		
@@ -50,11 +50,11 @@ public class Main {
 			
 			render.clear(clearColor);
 			
-			renderable.pos.x += 1;
+			//renderable.pos.x += 1;
 			
 			model.bind();
 			shader.bind();
-			renderable.update(shader);
+			//renderable.update(shader);
 			model.draw();
 			shader.unbind();
 			model.unbind();

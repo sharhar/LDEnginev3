@@ -43,6 +43,7 @@ public class VLK {
 		public long commandPool;
 		public VkQueue queue;
 		public VkCommandBuffer commandBuffer;
+		public VkPhysicalDeviceMemoryProperties memoryProperties;
 		
 		public PointerBuffer pCommandBuffers = memAllocPointer(1);
 	}
@@ -62,6 +63,20 @@ public class VLK {
         LongBuffer pRenderCompleteSemaphore = memAllocLong(1);
         IntBuffer pImageIndex = memAllocInt(1);
 	}
+	
+	public static boolean getMemoryType(VkPhysicalDeviceMemoryProperties deviceMemoryProperties, int typeBits, int properties, IntBuffer typeIndex) {
+        int bits = typeBits;
+        for (int i = 0; i < 32; i++) {
+            if ((bits & 1) == 1) {
+                if ((deviceMemoryProperties.memoryTypes(i).propertyFlags() & properties) == properties) {
+                    typeIndex.put(0, i);
+                    return true;
+                }
+            }
+            bits >>= 1;
+        }
+        return false;
+    }
 
 	public static VLKContext createContext(boolean debug) {
 		PointerBuffer requiredExtensions = glfwGetRequiredInstanceExtensions();
@@ -187,9 +202,13 @@ public class VLK {
 		VLKCheck(vkCreateDevice(device.physicalDevice, deviceCreateInfo, null, pDevice), "Failed to create device");
 		long deviceHandle = pDevice.get(0);
 		memFree(pDevice);
+		
+		VkPhysicalDeviceMemoryProperties memoryProperties = VkPhysicalDeviceMemoryProperties.calloc();
+		vkGetPhysicalDeviceMemoryProperties(device.physicalDevice, memoryProperties);
 
 		device.device = new VkDevice(deviceHandle, device.physicalDevice, deviceCreateInfo);
 		device.queueFamilyIndex = graphicsQueueFamilyIndex;
+		device.memoryProperties = memoryProperties;
 
 		deviceCreateInfo.free();
 		memFree(ppEnabledLayerNames);

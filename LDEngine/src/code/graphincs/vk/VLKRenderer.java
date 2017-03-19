@@ -38,11 +38,11 @@ public class VLKRenderer extends Renderer{
 	}
 	
 	public Model createModel(float[] data) {
-		return null;
+		return new VLKModel(this, data);
 	}
 
 	public Shader createShader(String vertPath, String fragPath) {
-		return null;
+		return new VLKShader(this, vertPath + "-vert.spv", fragPath + "-frag.spv");
 	}
 	
 	public Texture createTexture(String path) {
