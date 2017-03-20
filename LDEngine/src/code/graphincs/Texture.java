@@ -1,6 +1,7 @@
 package code.graphincs;
 
 import java.awt.image.BufferedImage;
+import java.io.FileInputStream;
 
 import javax.imageio.ImageIO;
 
@@ -14,7 +15,7 @@ abstract public class Texture {
 	
 	public Texture(Renderer renderer, String path) {
 		try {
-			image = ImageIO.read(Texture.class.getResourceAsStream(path));
+			image = ImageIO.read(new FileInputStream(path));//ImageIO.read(Texture.class.getResourceAsStream(path));
 			width = image.getWidth();
 			height = image.getHeight();
 			data = new int[width*height];

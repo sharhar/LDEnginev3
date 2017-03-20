@@ -44,7 +44,7 @@ public class Main {
 		
 		Model model = render.createModel(verts);
 		Shader shader = render.createShader("res/entity", "res/entity");
-		Texture texture = render.createTexture("/TestImage.png");
+		Texture texture = render.createTexture("res/TestImage.png");
 		Renderable renderable = render.createRenderable(shader, new Vector2f(100, 100), new Vector2f(50, 50), texture);
 		Renderable renderable2 = render.createRenderable(shader, new Vector2f(100, 300), new Vector2f(50, 50), texture);
 		
