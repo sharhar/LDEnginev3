@@ -6,7 +6,7 @@ import code.math.Vector4f;
 public abstract class Renderer {
 	public long window;
 	
-	abstract public long createWindowandContext(int width, int height, String title);
+	abstract public long createWindowandContext(int width, int height, String title, boolean debug);
 	abstract public void clear(Vector4f color);
 	abstract public void swap();
 	abstract public void destory();

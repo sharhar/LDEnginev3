@@ -16,7 +16,7 @@ import code.math.Vector4f;
 public class GLRenderer extends Renderer{
 	long window = 0;
 	
-	public long createWindowandContext(int width, int height, String title) {
+	public long createWindowandContext(int width, int height, String title, boolean debug) {
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 

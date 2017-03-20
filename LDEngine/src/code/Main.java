@@ -30,7 +30,7 @@ public class Main {
 			render = new GLRenderer();
 		}
 		
-		long window = render.createWindowandContext(800, 600, title);
+		long window = render.createWindowandContext(800, 600, title, true);
 		
 		float verts[] = {
 				 1, -1, 1, 1,
