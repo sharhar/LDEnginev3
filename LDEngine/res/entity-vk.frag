@@ -9,5 +9,11 @@ layout ( location = 0 ) in struct fragment_in {
 } IN;
 
 void main(void) {
-	out_color = texture(tex, IN.uv);
+	vec4 tcol = texture(tex, IN.uv);
+	
+	if(tcol.a < 0.5) {
+		discard;
+	}
+
+	out_color = tcol;
 }

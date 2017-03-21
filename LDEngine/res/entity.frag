@@ -7,5 +7,11 @@ uniform sampler2D tex;
 in vec2 texCoord;
 
 void main(void) {
-	out_color = texture(tex, texCoord);
+	vec4 tcol = texture(tex, texCoord);
+	
+	if(tcol.a < 0.5) {
+		discard;
+	}
+	
+	out_color = tcol;
 }

@@ -45,8 +45,9 @@ public class Main {
 		Model model = render.createModel(verts);
 		Shader shader = render.createShader("res/entity", "res/entity");
 		Texture texture = render.createTexture("res/TestImage.png");
+		Texture texture2 = render.createTexture("res/TestImage2.png");
 		Renderable renderable = render.createRenderable(shader, new Vector2f(100, 100), new Vector2f(50, 50), texture);
-		Renderable renderable2 = render.createRenderable(shader, new Vector2f(100, 300), new Vector2f(50, 50), texture);
+		Renderable renderable2 = render.createRenderable(shader, new Vector2f(100, 300), new Vector2f(50, 50), texture2);
 		
 		Vector4f clearColor = new Vector4f(0.2f, 0.3f, 0.8f, 1);
 		
@@ -58,8 +59,6 @@ public class Main {
 		int frames = 0;
 		double time = 0;
 		int fps = 0;
-		
-		
 		
 		while(!glfwWindowShouldClose(window)) {
 			glfwPollEvents();
@@ -79,8 +78,14 @@ public class Main {
 			
 			render.clear(clearColor);
 			
-			renderable.pos.x += 100 * dt;
-			renderable2.pos.x += 100 * dt;
+			float xoff = (float) Math.cos(glfwGetTime()*3.14159) * 100;
+			float yoff = (float) Math.sin(glfwGetTime()*2) * 100;
+			
+			renderable.pos.x = xoff + 400;
+			renderable2.pos.x = xoff + 400;
+			
+			renderable.pos.y = -yoff + 200;
+			renderable2.pos.y = yoff + 400;
 			
 			model.bind();
 			shader.bind();
