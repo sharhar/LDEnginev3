@@ -48,8 +48,8 @@ public class Main {
 		Shader shader = render.createShader("res/entity", "res/entity");
 		Texture texture = render.createTexture("res/TestImage.png");
 		Texture texture2 = render.createTexture("res/TestImage2.png");
-		Renderable renderable = render.createRenderable(shader, new Vector2f(100, 100), new Vector2f(50, 50), texture);
-		Renderable renderable2 = render.createRenderable(shader, new Vector2f(100, 300), new Vector2f(50, 50), texture2);
+		Renderable renderable = render.createRenderable(shader, new Vector2f(100, 100), 45, new Vector2f(50, 50), texture);
+		Renderable renderable2 = render.createRenderable(shader, new Vector2f(100, 300), 0, new Vector2f(50, 50), texture2);
 		
 		Vector4f clearColor = new Vector4f(0.2f, 0.3f, 0.8f, 1);
 		

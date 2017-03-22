@@ -28,8 +28,8 @@ public class VLKRenderable extends Renderable{
 	public long uniformallocationSize;
 	public long uniformbuffer;
 	
-	public VLKRenderable(Renderer renderer, Shader shader, Vector2f pos, Vector2f size, Texture texture) {
-		super(renderer, shader, pos, size, texture);
+	public VLKRenderable(Renderer renderer, Shader shader, Vector2f pos, float rot, Vector2f size, Texture texture) {
+		super(renderer, shader, pos, rot, size, texture);
 	}
 
 	protected void init() {
@@ -171,15 +171,7 @@ public class VLKRenderable extends Renderable{
     	writeDescriptorSet.free();
 	}
 
-	public void applyUniforms() {
-		
-		float[] modelview = {
-			size.x, 0, 0, 0,
-			0, size.y, 0, 0,
-			0, 0, 1, 0,
-			pos.x, pos.y, 0, 1
-		};
-		
+	public void applyUniformsCustom() {
 		PointerBuffer pData = memAllocPointer(1);
         VLK.VLKCheck(vkMapMemory(vrc.device.device, uniformmemory, 0, uniformallocationSize, 0, pData), 
         		"Failed to map memory");

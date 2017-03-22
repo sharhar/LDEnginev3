@@ -50,7 +50,7 @@ public class VLKRenderer extends Renderer{
 		return new VLKTexture(this, path);
 	}
 	
-	public Renderable createRenderable(Shader shader, Vector2f pos, Vector2f size, Texture texture) {
-		return new VLKRenderable(this, shader, pos, size, texture);
+	public Renderable createRenderable(Shader shader, Vector2f pos, float rot, Vector2f size, Texture texture) {
+		return new VLKRenderable(this, shader, pos, rot, size, texture);
 	}
 }

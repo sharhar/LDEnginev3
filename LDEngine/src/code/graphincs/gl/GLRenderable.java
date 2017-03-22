@@ -15,8 +15,8 @@ public class GLRenderable extends Renderable{
 	public GLTexture gtx;
 	public GLShader gshd;
 	
-	public GLRenderable(Renderer renderer, Shader shader, Vector2f pos, Vector2f size, Texture texture) {
-		super(renderer, shader, pos, size, texture);
+	public GLRenderable(Renderer renderer, Shader shader, Vector2f pos, float rot, Vector2f size, Texture texture) {
+		super(renderer, shader, pos, rot, size, texture);
 	}
 	
 	protected void init() {
@@ -24,17 +24,9 @@ public class GLRenderable extends Renderable{
 		gshd = (GLShader)shader;
 	}
 	
-	public void applyUniforms() {
+	public void applyUniformsCustom() {
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, gtx.tex);
-		
-		float[] modelview = {
-			size.x, 0, 0, 0,
-			0, size.y, 0, 0,
-			0, 0, 1, 0,
-			pos.x, pos.y, 0, 1
-		};
-		
 		glUniformMatrix4fv(gshd.modelviewLoc, false, modelview);
 	}
 }

@@ -57,7 +57,7 @@ public class GLRenderer extends Renderer{
 		return new GLTexture(this, path);
 	}
 	
-	public Renderable createRenderable(Shader shader, Vector2f pos, Vector2f size, Texture texture) {
-		return new GLRenderable(this, shader, pos, size, texture);
+	public Renderable createRenderable(Shader shader, Vector2f pos, float rot, Vector2f size, Texture texture) {
+		return new GLRenderable(this, shader, pos, rot, size, texture);
 	}
 }

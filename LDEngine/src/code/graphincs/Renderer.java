@@ -15,5 +15,5 @@ public abstract class Renderer {
 	abstract public Model createModel(float[] data);
 	abstract public Shader createShader(String vertPath, String fragPath);
 	abstract public Texture createTexture(String path);
-	abstract public Renderable createRenderable(Shader shader, Vector2f pos, Vector2f size, Texture texture);
+	abstract public Renderable createRenderable(Shader shader, Vector2f pos, float rot, Vector2f size, Texture texture);
 }
