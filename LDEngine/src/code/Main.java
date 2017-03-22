@@ -2,6 +2,7 @@ package code;
 
 import static org.lwjgl.glfw.GLFW.*;
 
+import code.window.Input;
 import code.window.Window;
 import code.graphincs.Model;
 import code.graphincs.Renderable;
@@ -79,14 +80,27 @@ public class Main {
 			
 			render.clear(clearColor);
 			
-			float xoff = (float) Math.cos(glfwGetTime()*3.14159) * 100;
-			float yoff = (float) Math.sin(glfwGetTime()*2) * 100;
+			float xoff = (float) Math.cos(glfwGetTime() * 2) * 100;
+			float yoff = (float) Math.sin(glfwGetTime() * 5) * 100;
 			
 			renderable.pos.x = xoff + 400;
-			renderable2.pos.x = xoff + 400;
-			
 			renderable.pos.y = -yoff + 200;
-			renderable2.pos.y = yoff + 400;
+			
+			if(Input.keys[GLFW_KEY_W]) {
+				renderable2.pos.y += 500 * dt;
+			}
+			
+			if(Input.keys[GLFW_KEY_S]) {
+				renderable2.pos.y -= 500 * dt;
+			}
+			
+			if(Input.keys[GLFW_KEY_A]) {
+				renderable2.pos.x -= 500 * dt;
+			}
+			
+			if(Input.keys[GLFW_KEY_D]) {
+				renderable2.pos.x += 500 * dt;
+			}
 			
 			model.bind();
 			shader.bind();
