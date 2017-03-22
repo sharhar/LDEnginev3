@@ -2,6 +2,7 @@ package code;
 
 import static org.lwjgl.glfw.GLFW.*;
 
+import code.window.Window;
 import code.graphincs.Model;
 import code.graphincs.Renderable;
 import code.graphincs.Renderer;
@@ -30,7 +31,7 @@ public class Main {
 			render = new GLRenderer();
 		}
 		
-		long window = render.createWindowandContext(800, 600, title, true);
+		Window window = render.createWindowandContext(800, 600, title, true);
 		
 		float verts[] = {
 				 1, -1, 1, 1,
@@ -60,8 +61,8 @@ public class Main {
 		double time = 0;
 		int fps = 0;
 		
-		while(!glfwWindowShouldClose(window)) {
-			glfwPollEvents();
+		while(window.isOpen()) {
+			window.poll();
 			
 			ct = glfwGetTime();
 			dt = ct - st;
@@ -71,7 +72,7 @@ public class Main {
 			time = time + dt;
 			if(time >= 1) {
 				fps = frames;
-				glfwSetWindowTitle(window, title + " | FPS: " + fps);
+				window.setTitle(title + " | FPS: " + fps);
 				frames = 0;
 				time = 0;
 			}
@@ -104,7 +105,7 @@ public class Main {
 		
 		render.destory();
 
-		glfwDestroyWindow(window);
+		window.destroy();
 		glfwTerminate();
 	}
 }
