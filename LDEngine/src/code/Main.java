@@ -4,6 +4,8 @@ import static org.lwjgl.glfw.GLFW.*;
 
 import code.window.Input;
 import code.window.Window;
+import code.audio.Sound;
+import code.audio.SoundManager;
 import code.graphincs.Model;
 import code.graphincs.Renderable;
 import code.graphincs.Renderer;
@@ -17,6 +19,8 @@ import code.math.Vector4f;
 public class Main {
 	public static void main(String[] args) {
 		glfwInit();
+		
+		SoundManager.init();
 		
 		boolean useVulkan = true;
 		
@@ -52,6 +56,8 @@ public class Main {
 		Renderable renderable2 = render.createRenderable(shader, new Vector2f(100, 300), 0, new Vector2f(50, 50), texture2);
 		
 		Vector4f clearColor = new Vector4f(0.2f, 0.3f, 0.8f, 1);
+		
+		Sound sound = new Sound("res/test.ogg");
 		
 		double st = glfwGetTime();
 		double ct = st;
@@ -102,6 +108,10 @@ public class Main {
 				renderable2.pos.x += 500 * dt;
 			}
 			
+			if(Input.keys[GLFW_KEY_SPACE]) {
+				sound.play();
+			}
+			
 			model.bind();
 			shader.bind();
 			
@@ -116,6 +126,8 @@ public class Main {
 			
 			render.swap();
 		}
+		
+		SoundManager.destroy();
 		
 		render.destory();
 

@@ -2,55 +2,19 @@ package code.graphincs.vk;
 
 import code.graphincs.Renderer;
 import code.graphincs.Shader;
+import code.utils.FileUtils;
 
 import static org.lwjgl.system.MemoryUtil.*;
 import static org.lwjgl.vulkan.VK10.*;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.nio.LongBuffer;
-import java.nio.channels.Channels;
-import java.nio.channels.ReadableByteChannel;
 
-import org.lwjgl.BufferUtils;
 import org.lwjgl.vulkan.*;
 
 public class VLKShader extends Shader {
-
-	private static ByteBuffer resizeBuffer(ByteBuffer buffer, int newCapacity) {
-		ByteBuffer newBuffer = BufferUtils.createByteBuffer(newCapacity);
-		buffer.flip();
-		newBuffer.put(buffer);
-		return newBuffer;
-	}
-
-	public static ByteBuffer ioResourceToByteBuffer(String resource, int bufferSize) throws IOException {
-		ByteBuffer buffer = BufferUtils.createByteBuffer(bufferSize);
-
-		FileInputStream source = new FileInputStream(resource);
-
-		try {
-			ReadableByteChannel rbc = Channels.newChannel(source);
-			try {
-				while (true) {
-					int bytes = rbc.read(buffer);
-					if (bytes == -1)
-						break;
-					if (buffer.remaining() == 0)
-						buffer = resizeBuffer(buffer, buffer.capacity() * 2);
-				}
-				buffer.flip();
-			} finally {
-				rbc.close();
-			}
-		} finally {
-			source.close();
-		}
-		return buffer;
-	}
-
 	public long vertShader;
 	public long fragShader;
 	public long pipeline;
@@ -67,7 +31,7 @@ public class VLKShader extends Shader {
 
 		ByteBuffer shaderCode = null;
 		try {
-			shaderCode = ioResourceToByteBuffer(vertPath, 10024);
+			shaderCode = FileUtils.ioResourceToByteBuffer(vertPath, 10024);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -81,7 +45,7 @@ public class VLKShader extends Shader {
 		memFree(pShaderModule);
 
 		try {
-			shaderCode = ioResourceToByteBuffer(fragPath, 10024);
+			shaderCode = FileUtils.ioResourceToByteBuffer(fragPath, 10024);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

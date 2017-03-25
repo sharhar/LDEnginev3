@@ -90,12 +90,17 @@ public class VLK {
 		}
 		ppEnabledLayerNames.flip();
 
-		VkApplicationInfo appInfo = VkApplicationInfo.calloc().sType(VK_STRUCTURE_TYPE_APPLICATION_INFO)
-				.pApplicationName(memUTF8("GLFW Vulkan Demo")).pEngineName(memUTF8("LDEnginev3"))
-				.apiVersion(VK_MAKE_VERSION(1, 0, 2));
+		VkApplicationInfo appInfo = VkApplicationInfo.calloc()
+				.sType(VK_STRUCTURE_TYPE_APPLICATION_INFO)
+				.pApplicationName(memUTF8("LD 38 Game"))
+				.pEngineName(memUTF8("LDEnginev3"))
+				.apiVersion(VK_MAKE_VERSION(1, 0, 3));
 
-		VkInstanceCreateInfo pCreateInfo = VkInstanceCreateInfo.calloc().sType(VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO)
-				.pNext(NULL).pApplicationInfo(appInfo).ppEnabledExtensionNames(ppEnabledExtensionNames)
+		VkInstanceCreateInfo pCreateInfo = VkInstanceCreateInfo.calloc()
+				.sType(VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO)
+				.pNext(NULL)
+				.pApplicationInfo(appInfo)
+				.ppEnabledExtensionNames(ppEnabledExtensionNames)
 				.ppEnabledLayerNames(ppEnabledLayerNames);
 
 		PointerBuffer pInstance = memAllocPointer(1);
