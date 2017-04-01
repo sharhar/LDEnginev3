@@ -1,4 +1,4 @@
-package code.utils;
+package code.engine.utils;
 
 import java.io.FileInputStream;
 import java.io.IOException;

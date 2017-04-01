@@ -1,8 +1,8 @@
-package code.graphincs.vk;
+package code.engine.graphics.vk;
 
-import code.graphincs.Renderer;
-import code.graphincs.Shader;
-import code.utils.FileUtils;
+import code.engine.graphics.Renderer;
+import code.engine.graphics.Shader;
+import code.engine.utils.FileUtils;
 
 import static org.lwjgl.system.MemoryUtil.*;
 import static org.lwjgl.vulkan.VK10.*;

@@ -1,11 +1,11 @@
-package code.graphincs.vk;
-
-import code.graphincs.Model;
-import code.graphincs.Renderer;
+package code.engine.graphics.vk;
 
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.system.MemoryUtil;
 import org.lwjgl.vulkan.*;
+
+import code.engine.graphics.Model;
+import code.engine.graphics.Renderer;
 
 import java.nio.*;
 

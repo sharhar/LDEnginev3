@@ -1,4 +1,4 @@
-package code.graphincs.vk;
+package code.engine.graphics.vk;
 
 import static org.lwjgl.glfw.GLFW.glfwGetWindowSize;
 import static org.lwjgl.system.MemoryUtil.*;
@@ -11,11 +11,11 @@ import java.nio.LongBuffer;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.vulkan.*;
 
-import code.graphincs.Renderable;
-import code.graphincs.Renderer;
-import code.graphincs.Shader;
-import code.graphincs.Texture;
-import code.math.Vector2f;
+import code.engine.graphics.Renderable;
+import code.engine.graphics.Renderer;
+import code.engine.graphics.Shader;
+import code.engine.graphics.Texture;
+import code.engine.math.Vector2f;
 
 public class VLKRenderable extends Renderable{
 	

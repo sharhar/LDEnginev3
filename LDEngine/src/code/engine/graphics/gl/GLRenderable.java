@@ -1,14 +1,14 @@
-package code.graphincs.gl;
+package code.engine.graphics.gl;
 
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL13.*;
 import static org.lwjgl.opengl.GL20.*;
 
-import code.graphincs.Renderable;
-import code.graphincs.Renderer;
-import code.graphincs.Shader;
-import code.graphincs.Texture;
-import code.math.Vector2f;
+import code.engine.graphics.Renderable;
+import code.engine.graphics.Renderer;
+import code.engine.graphics.Shader;
+import code.engine.graphics.Texture;
+import code.engine.math.Vector2f;
 
 public class GLRenderable extends Renderable{
 	

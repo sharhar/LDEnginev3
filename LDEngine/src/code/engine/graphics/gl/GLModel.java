@@ -1,12 +1,12 @@
-package code.graphincs.gl;
-
-import code.graphincs.Model;
-import code.graphincs.Renderer;
+package code.engine.graphics.gl;
 
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL15.*;
 import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.opengl.GL30.*;
+
+import code.engine.graphics.Model;
+import code.engine.graphics.Renderer;
 
 public class GLModel extends Model{
 	protected int vao;

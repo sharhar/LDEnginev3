@@ -1,8 +1,8 @@
-package code.graphincs;
+package code.engine.graphics;
 
-import code.math.Vector2f;
-import code.math.Vector4f;
-import code.window.Window;
+import code.engine.math.Vector2f;
+import code.engine.math.Vector4f;
+import code.engine.window.Window;
 
 public abstract class Renderer {
 	public long window;

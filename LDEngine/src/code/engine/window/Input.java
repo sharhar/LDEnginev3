@@ -1,8 +1,8 @@
-package code.window;
+package code.engine.window;
 
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_LAST;
 
-import code.math.Vector2f;
+import code.engine.math.Vector2f;
 
 public class Input {
 	public static boolean[] keys = new boolean[GLFW_KEY_LAST];

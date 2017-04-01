@@ -1,4 +1,4 @@
-package code.graphincs.gl;
+package code.engine.graphics.gl;
 
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL13.*;
@@ -7,9 +7,9 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.IntBuffer;
 
-import code.graphincs.Renderer;
-import code.graphincs.Shader;
-import code.graphincs.Texture;
+import code.engine.graphics.Renderer;
+import code.engine.graphics.Shader;
+import code.engine.graphics.Texture;
 
 public class GLTexture extends Texture{
 

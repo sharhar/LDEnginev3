@@ -2,19 +2,19 @@ package code;
 
 import static org.lwjgl.glfw.GLFW.*;
 
-import code.window.Input;
-import code.window.Window;
-import code.audio.Sound;
-import code.audio.SoundManager;
-import code.graphincs.Model;
-import code.graphincs.Renderable;
-import code.graphincs.Renderer;
-import code.graphincs.Shader;
-import code.graphincs.Texture;
-import code.graphincs.gl.GLRenderer;
-import code.graphincs.vk.VLKRenderer;
-import code.math.Vector2f;
-import code.math.Vector4f;
+import code.engine.audio.Sound;
+import code.engine.audio.SoundManager;
+import code.engine.graphics.Model;
+import code.engine.graphics.Renderable;
+import code.engine.graphics.Renderer;
+import code.engine.graphics.Shader;
+import code.engine.graphics.Texture;
+import code.engine.graphics.gl.GLRenderer;
+import code.engine.graphics.vk.VLKRenderer;
+import code.engine.math.Vector2f;
+import code.engine.math.Vector4f;
+import code.engine.window.Input;
+import code.engine.window.Window;
 
 public class Main {
 	public static void main(String[] args) {

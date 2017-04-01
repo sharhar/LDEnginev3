@@ -1,7 +1,4 @@
-package code.graphincs.vk;
-
-import code.graphincs.Renderer;
-import code.graphincs.Texture;
+package code.engine.graphics.vk;
 
 import static org.lwjgl.system.MemoryUtil.*;
 import static org.lwjgl.vulkan.VK10.*;
@@ -11,6 +8,9 @@ import java.nio.LongBuffer;
 
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.vulkan.*;
+
+import code.engine.graphics.Renderer;
+import code.engine.graphics.Texture;
 
 public class VLKTexture extends Texture{
 	

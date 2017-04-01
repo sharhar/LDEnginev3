@@ -1,4 +1,4 @@
-package code.audio;
+package code.engine.audio;
 
 import static org.lwjgl.openal.ALC10.*;
 import static org.lwjgl.openal.EXTThreadLocalContext.*;

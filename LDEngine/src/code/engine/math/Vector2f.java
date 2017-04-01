@@ -1,4 +1,4 @@
-package code.math;
+package code.engine.math;
 
 public class Vector2f {
 	public float x, y;

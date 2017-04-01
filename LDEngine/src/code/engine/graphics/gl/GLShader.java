@@ -1,16 +1,16 @@
-package code.graphincs.gl;
+package code.engine.graphics.gl;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 
+import code.engine.graphics.Renderer;
+import code.engine.graphics.Shader;
+
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL20.*;
 
 import static org.lwjgl.glfw.GLFW.*;
-
-import code.graphincs.Renderer;
-import code.graphincs.Shader;
 
 public class GLShader extends Shader{
 	public int program;

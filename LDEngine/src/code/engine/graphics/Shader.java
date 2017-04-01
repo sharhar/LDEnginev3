@@ -1,4 +1,4 @@
-package code.graphincs;
+package code.engine.graphics;
 
 abstract public class Shader {
 	protected String vertPath, fragPath;

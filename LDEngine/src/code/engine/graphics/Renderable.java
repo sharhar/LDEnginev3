@@ -1,6 +1,6 @@
-package code.graphincs;
+package code.engine.graphics;
 
-import code.math.Vector2f;
+import code.engine.math.Vector2f;
 
 abstract public class Renderable {
 	public Vector2f pos;

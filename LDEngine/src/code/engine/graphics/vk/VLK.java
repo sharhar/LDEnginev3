@@ -1,9 +1,9 @@
-package code.graphincs.vk;
+package code.engine.graphics.vk;
 
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.vulkan.*;
 
-import code.math.Vector4f;
+import code.engine.math.Vector4f;
 
 import java.nio.*;
 

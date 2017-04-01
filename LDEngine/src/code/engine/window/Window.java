@@ -1,4 +1,4 @@
-package code.window;
+package code.engine.window;
 
 import static org.lwjgl.glfw.GLFW.*;
 

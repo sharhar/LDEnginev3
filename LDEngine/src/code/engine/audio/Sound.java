@@ -1,9 +1,9 @@
-package code.audio;
+package code.engine.audio;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.stb.STBVorbisInfo;
 
-import code.utils.FileUtils;
+import code.engine.utils.FileUtils;
 
 import static org.lwjgl.openal.AL10.*;
 import static org.lwjgl.system.MemoryUtil.*;

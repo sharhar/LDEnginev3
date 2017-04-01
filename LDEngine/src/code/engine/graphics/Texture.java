@@ -1,4 +1,4 @@
-package code.graphincs;
+package code.engine.graphics;
 
 import java.awt.image.BufferedImage;
 import java.io.FileInputStream;
