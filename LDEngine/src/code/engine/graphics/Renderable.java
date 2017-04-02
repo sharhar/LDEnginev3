@@ -9,22 +9,24 @@ abstract public class Renderable {
 	public Texture texture;
 	public Renderer renderer;
 	public Shader shader;
+	public Model model;
 	public float[] modelview;
 	
-	public Renderable(Renderer renderer, Shader shader, Vector2f pos, float rot, Vector2f size, Texture texture) {
+	public Renderable(Renderer renderer, Model model, Shader shader, Vector2f pos, float rot, Vector2f size, Texture texture) {
 		this.pos = pos;
 		this.rot = rot;
 		this.size = size;
 		this.texture = texture;
 		this.renderer = renderer;
 		this.shader = shader;
+		this.model = model;
 		
 		this.modelview = new float[16];
 		
 		init();
 	}
 	
-	public void applyUniforms() {
+	public void render() {
 		float c = (float)Math.cos(Math.toRadians(rot));
 		float s = (float)Math.sin(Math.toRadians(rot));
 		
@@ -48,9 +50,12 @@ abstract public class Renderable {
 		modelview[14] = 0;
 		modelview[15] = 1;
 		
-		applyUniformsCustom();
+		applyUniforms();
+		
+		model.draw();
 	}
 	
+	abstract public void destroy();
 	abstract protected void init();
-	abstract public void applyUniformsCustom();
+	abstract public void applyUniforms();
 }

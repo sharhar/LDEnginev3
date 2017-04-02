@@ -2,6 +2,8 @@ package code;
 
 import static org.lwjgl.glfw.GLFW.*;
 
+import java.util.Random;
+
 import code.engine.audio.Sound;
 import code.engine.audio.SoundManager;
 import code.engine.graphics.Model;
@@ -68,19 +70,23 @@ public class Main {
 		
 		Model model = render.createModel(verts);
 		Shader shader = render.createShader("res/entity", "res/entity");
-		Texture texture = render.createTexture("res/Paddle.png");
-		Texture texture2 = render.createTexture("res/Ball.png");
-		Renderable paddle1 = render.createRenderable(shader, new Vector2f(50, 300), 0, new Vector2f(25, 125), texture);
-		Renderable paddle2 = render.createRenderable(shader, new Vector2f(750, 300), 0, new Vector2f(25, 125), texture);
-		Renderable ball = render.createRenderable(shader, new Vector2f(400, 300), 0, new Vector2f(25, 25), texture2);
+		Texture paddleTex = render.createTexture("res/Paddle.png");
+		Texture ballTex = render.createTexture("res/Ball.png");
+		Renderable paddle1 = render.createRenderable(model, shader, new Vector2f(50, 300), 0, new Vector2f(25, 125), paddleTex);
+		Renderable paddle2 = render.createRenderable(model, shader, new Vector2f(750, 300), 0, new Vector2f(25, 125), paddleTex);
+		Renderable ball = render.createRenderable(model, shader, new Vector2f(400, 300), 0, new Vector2f(25, 25), ballTex);
+		
+		Texture font = render.createTexture("res/font.png");
 		
 		Vector4f clearColor = new Vector4f(0.0f, 0.0f, 0.0f, 1);
 		
 		Sound sound = new Sound("res/test.ogg");
 		
-		float angle = (float)(Math.random()*2*Math.PI);
+		Random rand = new Random();
 		
-		Vector2f ballDir = new Vector2f((float)(400*Math.cos(angle)), (float)(400*Math.sin(angle)));
+		Vector2f ballDir = new Vector2f(
+				(rand.nextInt(2)*2 - 1)*(rand.nextInt(100)+300), 
+				(rand.nextInt(2)*2 - 1)*(rand.nextInt(100)+300));
 		
 		double st = glfwGetTime();
 		double ct = st;
@@ -90,6 +96,9 @@ public class Main {
 		int frames = 0;
 		double time = 0;
 		int fps = 0;
+		
+		int p1Score = 0;
+		int p2Score = 0;
 		
 		while(window.isOpen()) {
 			window.poll();
@@ -102,12 +111,9 @@ public class Main {
 			time = time + dt;
 			if(time >= 1) {
 				fps = frames;
-				window.setTitle(title + " | FPS: " + fps);
 				frames = 0;
 				time = 0;
 			}
-			
-			render.clear(clearColor);
 			
 			ball.pos.x += ballDir.x * dt;
 			ball.pos.y += ballDir.y * dt;
@@ -126,6 +132,30 @@ public class Main {
 			
 			if(isHitting(paddle2, ball)) {
 				ballDir.x = -Math.abs(ballDir.x);
+			}
+			
+			if(ball.pos.x < 0) {
+				p2Score++;
+				
+				ball.pos = new Vector2f(400, 300);
+				
+				ballDir = new Vector2f(
+						(rand.nextInt(2)*2 - 1)*(rand.nextInt(100)+300), 
+						(rand.nextInt(2)*2 - 1)*(rand.nextInt(100)+300));
+				
+				window.setTitle(title + " | P1: " + p1Score + " | P2: " + p2Score);
+			}
+			
+			if(ball.pos.x > 800) {
+				p1Score++;
+				
+				ball.pos = new Vector2f(400, 300);
+				
+				ballDir = new Vector2f(
+						(rand.nextInt(2)*2 - 1)*(rand.nextInt(100)+300), 
+						(rand.nextInt(2)*2 - 1)*(rand.nextInt(100)+300));
+				
+				window.setTitle(title + " | P1: " + p1Score + " | P2: " + p2Score);
 			}
 			
 			if(Input.keys[GLFW_KEY_W]) {
@@ -164,22 +194,31 @@ public class Main {
 				sound.play();
 			}
 			
-			model.bind();
+			Renderable text = render.createText(shader, font, "FPS:" + fps, 10, 574, 16);
+			
+			render.clear(clearColor);
+			
 			shader.bind();
 			
-			ball.applyUniforms();
-			model.draw();
+			model.bind();
 			
-			paddle1.applyUniforms();
-			model.draw();
+			ball.render();
+			paddle1.render();
+			paddle2.render();
 			
-			paddle2.applyUniforms();
-			model.draw();
-			
-			shader.unbind();
 			model.unbind();
 			
+			text.model.bind();
+			
+			text.render();
+			
+			text.model.unbind();
+			
+			shader.unbind();
+			
 			render.swap();
+			
+			text.destroy();
 		}
 		
 		SoundManager.destroy();

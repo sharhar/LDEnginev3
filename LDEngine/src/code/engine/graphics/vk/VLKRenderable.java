@@ -11,6 +11,7 @@ import java.nio.LongBuffer;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.vulkan.*;
 
+import code.engine.graphics.Model;
 import code.engine.graphics.Renderable;
 import code.engine.graphics.Renderer;
 import code.engine.graphics.Shader;
@@ -21,21 +22,23 @@ public class VLKRenderable extends Renderable{
 	
 	public VLKRenderer vrc;
 	public VLKShader vshd;
-	public VLKTexture vtex;;
+	public VLKTexture vtex;
+	public VLKModel vmodel;
 	public long descriptorPool;
 	public long descriptorSet;
 	public long uniformmemory;
 	public long uniformallocationSize;
 	public long uniformbuffer;
 	
-	public VLKRenderable(Renderer renderer, Shader shader, Vector2f pos, float rot, Vector2f size, Texture texture) {
-		super(renderer, shader, pos, rot, size, texture);
+	public VLKRenderable(Renderer renderer, Model model, Shader shader, Vector2f pos, float rot, Vector2f size, Texture texture) {
+		super(renderer, model, shader, pos, rot, size, texture);
 	}
 
 	protected void init() {
 		vrc = (VLKRenderer)renderer;
 		vshd = (VLKShader)shader;
 		vtex = (VLKTexture)texture;
+		vmodel = (VLKModel)model;
 		
 		VkDescriptorPoolSize.Buffer typeCounts = VkDescriptorPoolSize.calloc(1)
 				.type(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER)
@@ -72,7 +75,7 @@ public class VLKRenderable extends Renderable{
         memReqs.free();
         
         IntBuffer pMemoryTypeIndex = memAllocInt(1);
-        VLK.getMemoryType(vrc.device.memoryProperties, memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT, pMemoryTypeIndex);
+        VLK.getMemoryType(vrc.device.memoryProperties, memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, pMemoryTypeIndex);
         int memoryTypeIndex = pMemoryTypeIndex.get(0);
         memFree(pMemoryTypeIndex);
         
@@ -171,7 +174,7 @@ public class VLKRenderable extends Renderable{
     	writeDescriptorSet.free();
 	}
 
-	public void applyUniformsCustom() {
+	public void applyUniforms() {
 		PointerBuffer pData = memAllocPointer(1);
         VLK.VLKCheck(vkMapMemory(vrc.device.device, uniformmemory, 0, uniformallocationSize, 0, pData), 
         		"Failed to map memory");
@@ -184,5 +187,10 @@ public class VLKRenderable extends Renderable{
 		LongBuffer descriptorSets = memAllocLong(1).put(0, descriptorSet);
 		vkCmdBindDescriptorSets(vrc.device.commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, vshd.layout, 0, descriptorSets, null);
 		memFree(descriptorSets);
+	}
+	
+	public void destroy() {
+		vkDestroyBuffer(vrc.device.device, vmodel.buffer, null);
+		vkFreeMemory(vrc.device.device, vmodel.buffermem, null);
 	}
 }

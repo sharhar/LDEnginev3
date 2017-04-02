@@ -23,6 +23,9 @@ public class VLKRenderer extends Renderer{
 		device = VLK.createDevice(context);
 		swapChain = VLK.createSwapChain(context, device, window, vSync);
 		
+		this.width = width;
+		this.height = height;
+		
 		return new Window(window);
 	}
 
@@ -50,7 +53,7 @@ public class VLKRenderer extends Renderer{
 		return new VLKTexture(this, path);
 	}
 	
-	public Renderable createRenderable(Shader shader, Vector2f pos, float rot, Vector2f size, Texture texture) {
-		return new VLKRenderable(this, shader, pos, rot, size, texture);
+	public Renderable createRenderable(Model model, Shader shader, Vector2f pos, float rot, Vector2f size, Texture texture) {
+		return new VLKRenderable(this, model, shader, pos, rot, size, texture);
 	}
 }

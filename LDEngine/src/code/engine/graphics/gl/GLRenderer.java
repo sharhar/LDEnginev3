@@ -35,6 +35,9 @@ public class GLRenderer extends Renderer{
 		
 		GL.createCapabilities();
 		
+		this.width = width;
+		this.height = height;
+		
 		return new Window(window);
 	}
 
@@ -63,7 +66,7 @@ public class GLRenderer extends Renderer{
 		return new GLTexture(this, path);
 	}
 	
-	public Renderable createRenderable(Shader shader, Vector2f pos, float rot, Vector2f size, Texture texture) {
-		return new GLRenderable(this, shader, pos, rot, size, texture);
+	public Renderable createRenderable(Model model, Shader shader, Vector2f pos, float rot, Vector2f size, Texture texture) {
+		return new GLRenderable(this, model, shader, pos, rot, size, texture);
 	}
 }
