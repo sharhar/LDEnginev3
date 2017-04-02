@@ -1,6 +1,7 @@
 package code.engine.graphics;
 
 import code.engine.math.Vector2f;
+import code.engine.math.Vector4f;
 
 abstract public class Renderable {
 	public Vector2f pos;
@@ -11,6 +12,9 @@ abstract public class Renderable {
 	public Shader shader;
 	public Model model;
 	public float[] modelview;
+	public Vector4f color;
+	public float alphaWidth;
+	public float alphaEdge;
 	
 	public Renderable(Renderer renderer, Model model, Shader shader, Vector2f pos, float rot, Vector2f size, Texture texture) {
 		this.pos = pos;
@@ -20,6 +24,9 @@ abstract public class Renderable {
 		this.renderer = renderer;
 		this.shader = shader;
 		this.model = model;
+		this.color = new Vector4f(1, 1, 1, 1);
+		this.alphaWidth = 0;
+		this.alphaEdge = 1;
 		
 		this.modelview = new float[16];
 		
@@ -58,4 +65,5 @@ abstract public class Renderable {
 	abstract public void destroy();
 	abstract protected void init();
 	abstract public void applyUniforms();
+	abstract public void updateSettings();
 }

@@ -6,6 +6,7 @@ import java.util.Random;
 
 import code.engine.audio.Sound;
 import code.engine.audio.SoundManager;
+import code.engine.graphics.Font;
 import code.engine.graphics.Model;
 import code.engine.graphics.Renderable;
 import code.engine.graphics.Renderer;
@@ -35,6 +36,24 @@ public class Main {
 		}
 		
 		return true;
+	}
+	
+	public static float getTextWidth(Font font, String text, float size) {
+		float result = 0;
+		
+		for (int i = 0; i < text.length(); i++) {
+			int chid = (int)text.charAt(i);
+
+			if(chid != 32) {
+				float sc = size / font.fontChars[chid].height;
+				
+				result += font.fontChars[chid].width*sc + font.fontChars[chid].xadvance*sc/2;
+			} else {
+				result += size;
+			}
+		}
+		
+		return result;
 	}
 	
 	public static void main(String[] args) {
@@ -76,8 +95,6 @@ public class Main {
 		Renderable paddle2 = render.createRenderable(model, shader, new Vector2f(750, 300), 0, new Vector2f(25, 125), paddleTex);
 		Renderable ball = render.createRenderable(model, shader, new Vector2f(400, 300), 0, new Vector2f(25, 25), ballTex);
 		
-		Texture font = render.createTexture("res/font.png");
-		
 		Vector4f clearColor = new Vector4f(0.0f, 0.0f, 0.0f, 1);
 		
 		Sound sound = new Sound("res/test.ogg");
@@ -87,6 +104,17 @@ public class Main {
 		Vector2f ballDir = new Vector2f(
 				(rand.nextInt(2)*2 - 1)*(rand.nextInt(100)+300), 
 				(rand.nextInt(2)*2 - 1)*(rand.nextInt(100)+300));
+		
+		String scoreTextString = "0 | 0";
+		
+		Font arial = new Font(render, "res/arial");
+		
+		float textWidth = getTextWidth(arial, scoreTextString, 24);
+		
+		
+		
+		Renderable fpsText = render.createText(shader, arial, paddleTex, "FPS:0", 10, 566, 24);
+		Renderable scoreText = render.createText(shader, arial, paddleTex, scoreTextString, 400-(textWidth/2.0f), 566, 24);
 		
 		double st = glfwGetTime();
 		double ct = st;
@@ -111,6 +139,8 @@ public class Main {
 			time = time + dt;
 			if(time >= 1) {
 				fps = frames;
+				fpsText.destroy();
+				fpsText = render.createText(shader, arial, paddleTex, "FPS:" + fps, 10, 566, 24);
 				frames = 0;
 				time = 0;
 			}
@@ -143,7 +173,9 @@ public class Main {
 						(rand.nextInt(2)*2 - 1)*(rand.nextInt(100)+300), 
 						(rand.nextInt(2)*2 - 1)*(rand.nextInt(100)+300));
 				
-				window.setTitle(title + " | P1: " + p1Score + " | P2: " + p2Score);
+				scoreTextString = p1Score + " | " + p2Score;
+				textWidth = getTextWidth(arial, scoreTextString, 24);
+				scoreText = render.createText(shader, arial, paddleTex, scoreTextString, 400-(textWidth/2.0f), 566, 24);
 			}
 			
 			if(ball.pos.x > 800) {
@@ -155,7 +187,9 @@ public class Main {
 						(rand.nextInt(2)*2 - 1)*(rand.nextInt(100)+300), 
 						(rand.nextInt(2)*2 - 1)*(rand.nextInt(100)+300));
 				
-				window.setTitle(title + " | P1: " + p1Score + " | P2: " + p2Score);
+				scoreTextString = p1Score + " | " + p2Score;
+				textWidth = getTextWidth(arial, scoreTextString, 24);
+				scoreText = render.createText(shader, arial, paddleTex, scoreTextString, 400-(textWidth/2.0f), 566, 24);
 			}
 			
 			if(Input.keys[GLFW_KEY_W]) {
@@ -194,8 +228,6 @@ public class Main {
 				sound.play();
 			}
 			
-			Renderable text = render.createText(shader, font, "FPS:" + fps, 10, 574, 16);
-			
 			render.clear(clearColor);
 			
 			shader.bind();
@@ -208,17 +240,17 @@ public class Main {
 			
 			model.unbind();
 			
-			text.model.bind();
+			fpsText.model.bind();
+			fpsText.render();
+			fpsText.model.unbind();
 			
-			text.render();
-			
-			text.model.unbind();
+			scoreText.model.bind();
+			scoreText.render();
+			scoreText.model.unbind();
 			
 			shader.unbind();
 			
 			render.swap();
-			
-			text.destroy();
 		}
 		
 		SoundManager.destroy();

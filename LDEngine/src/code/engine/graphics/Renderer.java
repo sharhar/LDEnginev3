@@ -1,5 +1,6 @@
 package code.engine.graphics;
 
+import code.engine.graphics.Font.FontChar;
 import code.engine.math.Vector2f;
 import code.engine.math.Vector4f;
 import code.engine.window.Window;
@@ -19,25 +20,46 @@ public abstract class Renderer {
 	abstract public Texture createTexture(String path);
 	abstract public Renderable createRenderable(Model model, Shader shader, Vector2f pos, float rot, Vector2f size, Texture texture);
 	
-	public Renderable createText(Shader shader, Texture texture, String text, float xOff, float yOff, float size) {
+	public Renderable createText(Shader shader, Font font, Texture texture, String text, float xOff, float yOff, float size) {
+		return createText(shader, font, texture, text, xOff, yOff, size, 0.3f, 0.3f, new Vector4f(1, 1, 1, 1));
+	}
+	
+	public Renderable createText(Shader shader, Font font, Texture texture, String text, float xOff, float yOff, float size, float width, float edge) {
+		return createText(shader, font, texture, text, xOff, yOff, size, width, edge, new Vector4f(1, 1, 1, 1));
+	}
+	
+	public Renderable createText(Shader shader, Font font, Texture texture, String text, float xOff, float yOff, float size, Vector4f color) {
+		return createText(shader, font, texture, text, xOff, yOff, size, 0.3f, 0.3f, color);
+	}
+	
+	public Renderable createText(Shader shader, Font font, Texture texture, String text, float xOff, float yOff, float size, float width, float edge, Vector4f color) {
 		int tsz = text.length();
 		float[] verts = new float[tsz * 4 * 6];
 		
+		float cursorPos = 0;
+		
 		for (int i = 0; i < tsz; i++) {
 			int chid = (int)text.charAt(i);
+			FontChar fontChar = font.fontChars[chid];
 
-			float sx = chid % 16;
-			float sy = (chid - sx) / 16;
-
-			float x1 = xOff + size * i;
-			float y1 = yOff + size;
-			float x2 = xOff + size * (i + 1);
+			if(chid == 32) {
+				cursorPos += size;
+				continue;
+			}
+			
+			float sc = size / font.fontChars[chid].height;
+			
+			float x1 = xOff + cursorPos;
+			float y1 = yOff + font.fontChars[chid].height*sc;
+			float x2 = xOff + cursorPos + font.fontChars[chid].width*sc;
 			float y2 = yOff;
 
-			float tx1 = (sx + 0.0f) / 16.0f;
-			float ty1 = (sy + 0.0f) / 16.0f;
-			float tx2 = (sx + 1.0f) / 16.0f;
-			float ty2 = (sy + 1.0f) / 16.0f;
+			float tx1 = fontChar.x1tex;
+			float ty1 = fontChar.y1tex;
+			float tx2 = fontChar.x2tex;
+			float ty2 = fontChar.y2tex;
+			
+			cursorPos += font.fontChars[chid].width*sc + font.fontChars[chid].xadvance*sc/2;
 
 			verts[i * 24 + 0] = x1;
 			verts[i * 24 + 1] = y1;
@@ -78,6 +100,12 @@ public abstract class Renderer {
 		
 		Model model = createModel(verts);
 		
-		return createRenderable(model, shader, new Vector2f(0, 0), 0, new Vector2f(1, 1), texture);
+		Renderable renderable = createRenderable(model, shader, new Vector2f(0, 0), 0, new Vector2f(1, 1), font.texture);
+		renderable.alphaEdge = edge;
+		renderable.alphaWidth = width;
+		renderable.color = color;
+		renderable.updateSettings();
+		
+		return renderable;
 	}
 }

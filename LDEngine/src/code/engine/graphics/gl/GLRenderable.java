@@ -29,9 +29,16 @@ public class GLRenderable extends Renderable{
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, gtx.tex);
 		glUniformMatrix4fv(gshd.modelviewLoc, false, modelview);
+		glUniform4f(gshd.colorLoc, color.x, color.y, color.z, color.w);
+		glUniform1f(gshd.widthLoc, alphaWidth);
+		glUniform1f(gshd.edgeLoc, alphaEdge);
 	}
 
 	public void destroy() {
+		
+	}
+	
+	public void updateSettings() {
 		
 	}
 }

@@ -20,6 +20,9 @@ public class GLShader extends Shader{
 	public int texLoc;
 	public int projLoc;
 	public int modelviewLoc;
+	public int colorLoc;
+	public int widthLoc;
+	public int edgeLoc;
 	
 	public GLShader(Renderer renderer, String vertPath, String fragPath) {
 		super(renderer, vertPath, fragPath);
@@ -67,6 +70,9 @@ public class GLShader extends Shader{
 		texLoc = glGetUniformLocation(program, "tex");
 		projLoc = glGetUniformLocation(program, "proj");
 		modelviewLoc = glGetUniformLocation(program, "modelview");
+		colorLoc = glGetUniformLocation(program, "color");
+		widthLoc = glGetUniformLocation(program, "width");
+		edgeLoc = glGetUniformLocation(program, "edge");
 		
 		long window = glfwGetCurrentContext();
 		

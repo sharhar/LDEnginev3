@@ -29,6 +29,9 @@ public class VLKRenderable extends Renderable{
 	public long uniformmemory;
 	public long uniformallocationSize;
 	public long uniformbuffer;
+	public long settingsmemory;
+	public long settingsallocationSize;
+	public long settingsbuffer;
 	
 	public VLKRenderable(Renderer renderer, Model model, Shader shader, Vector2f pos, float rot, Vector2f size, Texture texture) {
 		super(renderer, model, shader, pos, rot, size, texture);
@@ -56,6 +59,21 @@ public class VLKRenderable extends Renderable{
 		memFree(pDescriptorPool);
 		descriptorPoolInfo.free();
 		typeCounts.free();
+		
+		LongBuffer pDescriptorSetLayout = memAllocLong(1);
+        pDescriptorSetLayout.put(0, vshd.descriptorSetLayout);
+        VkDescriptorSetAllocateInfo descAllocInfo = VkDescriptorSetAllocateInfo.calloc()
+                .sType(VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO)
+                .descriptorPool(descriptorPool)
+                .pSetLayouts(pDescriptorSetLayout);
+
+        LongBuffer pDescriptorSet = memAllocLong(1);
+        VLK.VLKCheck(vkAllocateDescriptorSets(vrc.device.device, descAllocInfo, pDescriptorSet), 
+        		"Failed to allocate descriptor set");
+        descriptorSet = pDescriptorSet.get(0);
+        memFree(pDescriptorSet);
+        descAllocInfo.free();
+        memFree(pDescriptorSetLayout);
 
 		VkBufferCreateInfo bufferInfo = VkBufferCreateInfo.calloc()
                 .sType(VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO)
@@ -91,21 +109,6 @@ public class VLKRenderable extends Renderable{
         allocInfo.free();
         
         vkBindBufferMemory(vrc.device.device, uniformbuffer, uniformmemory, 0);
-        
-        LongBuffer pDescriptorSetLayout = memAllocLong(1);
-        pDescriptorSetLayout.put(0, vshd.descriptorSetLayout);
-        VkDescriptorSetAllocateInfo descAllocInfo = VkDescriptorSetAllocateInfo.calloc()
-                .sType(VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO)
-                .descriptorPool(descriptorPool)
-                .pSetLayouts(pDescriptorSetLayout);
-
-        LongBuffer pDescriptorSet = memAllocLong(1);
-        VLK.VLKCheck(vkAllocateDescriptorSets(vrc.device.device, descAllocInfo, pDescriptorSet), 
-        		"Failed to allocate descriptor set");
-        descriptorSet = pDescriptorSet.get(0);
-        memFree(pDescriptorSet);
-        descAllocInfo.free();
-        memFree(pDescriptorSetLayout);
 
         VkDescriptorBufferInfo.Buffer descriptor = VkDescriptorBufferInfo.calloc(1)
                 .buffer(uniformbuffer)
@@ -172,6 +175,56 @@ public class VLKRenderable extends Renderable{
     	vkUpdateDescriptorSets(vrc.device.device, tex_write, null);
     	
     	writeDescriptorSet.free();
+    	
+    	bufferInfo = VkBufferCreateInfo.calloc()
+                .sType(VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO)
+                .size(4 * 6)
+                .usage(VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);
+        pUniformDataVSBuffer = memAllocLong(1);
+        VLK.VLKCheck(vkCreateBuffer(vrc.device.device, bufferInfo, null, pUniformDataVSBuffer), 
+        		"Failed to create buffer");
+        settingsbuffer = pUniformDataVSBuffer.get(0);
+        memFree(pUniformDataVSBuffer);
+        bufferInfo.free();
+		
+        memReqs = VkMemoryRequirements.calloc();
+        vkGetBufferMemoryRequirements(vrc.device.device, settingsbuffer, memReqs);
+        settingsallocationSize = memReqs.size();
+        memoryTypeBits = memReqs.memoryTypeBits();
+        memReqs.free();
+        
+        pMemoryTypeIndex = memAllocInt(1);
+        VLK.getMemoryType(vrc.device.memoryProperties, memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, pMemoryTypeIndex);
+        memoryTypeIndex = pMemoryTypeIndex.get(0);
+        memFree(pMemoryTypeIndex);
+        
+        pUniformDataVSMemory = memAllocLong(1);
+        allocInfo = VkMemoryAllocateInfo.calloc()
+                .sType(VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO)
+                .pNext(NULL)
+                .allocationSize(settingsallocationSize)
+                .memoryTypeIndex(memoryTypeIndex);
+        vkAllocateMemory(vrc.device.device, allocInfo, null, pUniformDataVSMemory);
+        settingsmemory = pUniformDataVSMemory.get(0);
+        memFree(pUniformDataVSMemory);
+        allocInfo.free();
+        
+        vkBindBufferMemory(vrc.device.device, settingsbuffer, settingsmemory, 0);
+
+        descriptor = VkDescriptorBufferInfo.calloc(1)
+                .buffer(settingsbuffer)
+                .range(4 * 6)
+                .offset(0);
+        
+        writeDescriptorSet = VkWriteDescriptorSet.calloc(1)
+                .sType(VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET)
+                .dstSet(descriptorSet)
+                .descriptorType(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER)
+                .pBufferInfo(descriptor)
+                .dstBinding(2);
+        vkUpdateDescriptorSets(vrc.device.device, writeDescriptorSet, null);
+        
+        updateSettings();
 	}
 
 	public void applyUniforms() {
@@ -192,5 +245,21 @@ public class VLKRenderable extends Renderable{
 	public void destroy() {
 		vkDestroyBuffer(vrc.device.device, vmodel.buffer, null);
 		vkFreeMemory(vrc.device.device, vmodel.buffermem, null);
+	}
+	
+	public void updateSettings() {
+		PointerBuffer pData = memAllocPointer(1);
+        VLK.VLKCheck(vkMapMemory(vrc.device.device, settingsmemory, 0, settingsallocationSize, 0, pData), 
+        		"Failed to map memory");
+        long data = pData.get(0);
+        memFree(pData);
+        FloatBuffer settingsFloatBuffer = memFloatBuffer(data, 6);
+        settingsFloatBuffer.put(0, color.x);
+        settingsFloatBuffer.put(1, color.y);
+        settingsFloatBuffer.put(2, color.z);
+        settingsFloatBuffer.put(3, color.w);
+        settingsFloatBuffer.put(4, alphaWidth);
+        settingsFloatBuffer.put(5, alphaEdge);
+        vkUnmapMemory(vrc.device.device, settingsmemory);
 	}
 }

@@ -58,7 +58,7 @@ public class VLKShader extends Shader {
 		fragShader = pShaderModule.get(0);
 		memFree(pShaderModule);
         
-        VkDescriptorSetLayoutBinding.Buffer layoutBinding = VkDescriptorSetLayoutBinding.calloc(2);
+        VkDescriptorSetLayoutBinding.Buffer layoutBinding = VkDescriptorSetLayoutBinding.calloc(3);
         layoutBinding.get(0)
                 .binding(0)
                 .descriptorType(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER)
@@ -72,6 +72,13 @@ public class VLKShader extends Shader {
         		.descriptorCount(1)
         		.stageFlags(VK_SHADER_STAGE_FRAGMENT_BIT)
         		.pImmutableSamplers(null);
+        
+        layoutBinding.get(2)
+			.binding(2)
+			.descriptorType(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER)
+			.descriptorCount(1)
+			.stageFlags(VK_SHADER_STAGE_FRAGMENT_BIT)
+			.pImmutableSamplers(null);
         
         VkDescriptorSetLayoutCreateInfo descriptorLayout = VkDescriptorSetLayoutCreateInfo.calloc()
                 .sType(VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO)
@@ -110,9 +117,18 @@ public class VLKShader extends Shader {
 				.rasterizerDiscardEnable(false).depthBiasEnable(false);
 
 		VkPipelineColorBlendAttachmentState.Buffer colorWriteMask = VkPipelineColorBlendAttachmentState.calloc(1)
-				.blendEnable(false).colorWriteMask(0xF);
+				.blendEnable(true)
+				.colorWriteMask(VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT)
+				.srcColorBlendFactor(VK_BLEND_FACTOR_SRC_ALPHA)
+				.dstColorBlendFactor(VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA)
+				.colorBlendOp(VK_BLEND_OP_ADD)
+				.srcAlphaBlendFactor(VK_BLEND_FACTOR_ONE)
+				.dstAlphaBlendFactor(VK_BLEND_FACTOR_ZERO)
+				.alphaBlendOp(VK_BLEND_OP_ADD);
+		
 		VkPipelineColorBlendStateCreateInfo colorBlendState = VkPipelineColorBlendStateCreateInfo.calloc()
-				.sType(VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO).pAttachments(colorWriteMask);
+				.sType(VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO)
+				.pAttachments(colorWriteMask);
 
 		VkPipelineViewportStateCreateInfo viewportState = VkPipelineViewportStateCreateInfo.calloc()
 				.sType(VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO).viewportCount(1).scissorCount(1);
