@@ -17,7 +17,7 @@ import code.engine.window.Window;
 public class GLRenderer extends Renderer{
 	long window = 0;
 	
-	public Window createWindowandContext(int width, int height, String title, boolean debug) {
+	public Window createWindowandContext(int width, int height, String title, boolean debug, boolean vSync) {
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 
@@ -26,7 +26,13 @@ public class GLRenderer extends Renderer{
 
 		window = glfwCreateWindow(width, height, title, 0, 0);
 		glfwMakeContextCurrent(window);
-		glfwSwapInterval(0);
+		
+		if(vSync) {
+			glfwSwapInterval(1);
+		} else {
+			glfwSwapInterval(0);
+		}
+		
 		GL.createCapabilities();
 		
 		return new Window(window);

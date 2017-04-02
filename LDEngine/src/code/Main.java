@@ -17,12 +17,30 @@ import code.engine.window.Input;
 import code.engine.window.Window;
 
 public class Main {
+	
+	public static boolean isHitting(Renderable paddle, Renderable ball) {
+		Vector2f p1 = new Vector2f(paddle.pos.x - paddle.size.x/2, paddle.pos.y - paddle.size.y/2);
+		Vector2f p2 = new Vector2f(ball.pos.x - ball.size.x/2, ball.pos.y - ball.size.y/2);
+		Vector2f s1 = paddle.size;
+		Vector2f s2 = ball.size;
+		
+		if(p1.x + s1.x< p2.x || p2.x + s2.x < p1.x) {
+			return false;
+		}
+		
+		if(p1.y + s1.y < p2.y || p2.y + s2.y < p1.y) {
+			return false;
+		}
+		
+		return true;
+	}
+	
 	public static void main(String[] args) {
 		glfwInit();
 		
 		SoundManager.init();
 		
-		boolean useVulkan = true;
+		boolean useVulkan = false;
 		
 		Renderer render = null;
 		
@@ -36,28 +54,33 @@ public class Main {
 			render = new GLRenderer();
 		}
 		
-		Window window = render.createWindowandContext(800, 600, title, true);
+		Window window = render.createWindowandContext(800, 600, title, true, false);
 		
 		float verts[] = {
-				 1, -1, 1, 1,
-				-1,  1, 0, 0,
-				-1, -1, 0, 1,
+				 0.5f, -0.5f, 1, 1,
+				-0.5f,  0.5f, 0, 0,
+				-0.5f, -0.5f, 0, 1,
 				 
-				-1,  1, 0, 0,
-				 1, -1, 1, 1,
-				 1,  1, 1, 0
+				-0.5f,  0.5f, 0, 0,
+				 0.5f, -0.5f, 1, 1,
+				 0.5f,  0.5f, 1, 0
 		};
 		
 		Model model = render.createModel(verts);
 		Shader shader = render.createShader("res/entity", "res/entity");
-		Texture texture = render.createTexture("res/TestImage.png");
-		Texture texture2 = render.createTexture("res/TestImage2.png");
-		Renderable renderable = render.createRenderable(shader, new Vector2f(100, 100), 45, new Vector2f(50, 50), texture);
-		Renderable renderable2 = render.createRenderable(shader, new Vector2f(100, 300), 0, new Vector2f(50, 50), texture2);
+		Texture texture = render.createTexture("res/Paddle.png");
+		Texture texture2 = render.createTexture("res/Ball.png");
+		Renderable paddle1 = render.createRenderable(shader, new Vector2f(50, 300), 0, new Vector2f(25, 125), texture);
+		Renderable paddle2 = render.createRenderable(shader, new Vector2f(750, 300), 0, new Vector2f(25, 125), texture);
+		Renderable ball = render.createRenderable(shader, new Vector2f(400, 300), 0, new Vector2f(25, 25), texture2);
 		
-		Vector4f clearColor = new Vector4f(0.2f, 0.3f, 0.8f, 1);
+		Vector4f clearColor = new Vector4f(0.0f, 0.0f, 0.0f, 1);
 		
 		Sound sound = new Sound("res/test.ogg");
+		
+		float angle = (float)(Math.random()*2*Math.PI);
+		
+		Vector2f ballDir = new Vector2f((float)(400*Math.cos(angle)), (float)(400*Math.sin(angle)));
 		
 		double st = glfwGetTime();
 		double ct = st;
@@ -86,26 +109,55 @@ public class Main {
 			
 			render.clear(clearColor);
 			
-			float xoff = (float) Math.cos(glfwGetTime() * 2) * 100;
-			float yoff = (float) Math.sin(glfwGetTime() * 5) * 100;
+			ball.pos.x += ballDir.x * dt;
+			ball.pos.y += ballDir.y * dt;
 			
-			renderable.pos.x = xoff + 400;
-			renderable.pos.y = -yoff + 200;
+			if(ball.pos.y > 600 - ball.size.y/2) {
+				ballDir.y = -Math.abs(ballDir.y);
+			}
+			
+			if(ball.pos.y < ball.size.y/2) {
+				ballDir.y = Math.abs(ballDir.y);
+			}
+			
+			if(isHitting(paddle1, ball)) {
+				ballDir.x = Math.abs(ballDir.x);
+			}
+			
+			if(isHitting(paddle2, ball)) {
+				ballDir.x = -Math.abs(ballDir.x);
+			}
 			
 			if(Input.keys[GLFW_KEY_W]) {
-				renderable2.pos.y += 500 * dt;
+				paddle1.pos.y += 1200 * dt;
+				
+				if(paddle1.pos.y > 600 - paddle1.size.y/2) {
+					paddle1.pos.y = 600 - paddle1.size.y/2;
+				}
 			}
 			
 			if(Input.keys[GLFW_KEY_S]) {
-				renderable2.pos.y -= 500 * dt;
+				paddle1.pos.y -= 1200 * dt;
+				
+				if(paddle1.pos.y < paddle1.size.y/2) {
+					paddle1.pos.y = paddle1.size.y/2;
+				}
 			}
 			
-			if(Input.keys[GLFW_KEY_A]) {
-				renderable2.pos.x -= 500 * dt;
+			if(Input.keys[GLFW_KEY_UP]) {
+				paddle2.pos.y += 1200 * dt;
+				
+				if(paddle2.pos.y > 600 - paddle2.size.y/2) {
+					paddle2.pos.y = 600 - paddle2.size.y/2;
+				}
 			}
 			
-			if(Input.keys[GLFW_KEY_D]) {
-				renderable2.pos.x += 500 * dt;
+			if(Input.keys[GLFW_KEY_DOWN]) {
+				paddle2.pos.y -= 1200 * dt;
+				
+				if(paddle2.pos.y < paddle2.size.y/2) {
+					paddle2.pos.y = paddle2.size.y/2;
+				}
 			}
 			
 			if(Input.keys[GLFW_KEY_SPACE]) {
@@ -115,10 +167,13 @@ public class Main {
 			model.bind();
 			shader.bind();
 			
-			renderable.applyUniforms();
+			ball.applyUniforms();
 			model.draw();
 			
-			renderable2.applyUniforms();
+			paddle1.applyUniforms();
+			model.draw();
+			
+			paddle2.applyUniforms();
 			model.draw();
 			
 			shader.unbind();

@@ -7,7 +7,7 @@ import code.engine.window.Window;
 public abstract class Renderer {
 	public long window;
 	
-	abstract public Window createWindowandContext(int width, int height, String title, boolean debug);
+	abstract public Window createWindowandContext(int width, int height, String title, boolean debug, boolean vSync);
 	abstract public void clear(Vector4f color);
 	abstract public void swap();
 	abstract public void destory();

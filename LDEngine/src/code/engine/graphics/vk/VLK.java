@@ -284,7 +284,7 @@ public class VLK {
         imageMemoryBarrier.free();
     }
 	
-	public static VLKSwapChain createSwapChain(VLKContext context, VLKDevice device, long window) {
+	public static VLKSwapChain createSwapChain(VLKContext context, VLKDevice device, long window, boolean vSync) {
 		VLKSwapChain swapChain = new VLKSwapChain();
 		
 		LongBuffer surfaceBuffer = memAllocLong(1);
@@ -388,15 +388,19 @@ public class VLK {
 
         // Try to use mailbox mode. Low latency and non-tearing
         int swapchainPresentMode = VK_PRESENT_MODE_FIFO_KHR;
-        for (int i = 0; i < presentModeCount; i++) {
-            if (pPresentModes.get(i) == VK_PRESENT_MODE_MAILBOX_KHR) {
-                swapchainPresentMode = VK_PRESENT_MODE_MAILBOX_KHR;
-                break;
-            }
-            if ((swapchainPresentMode != VK_PRESENT_MODE_MAILBOX_KHR) && (pPresentModes.get(i) == VK_PRESENT_MODE_IMMEDIATE_KHR)) {
-                swapchainPresentMode = VK_PRESENT_MODE_IMMEDIATE_KHR;
+        
+        if(!vSync) {
+        	for (int i = 0; i < presentModeCount; i++) {
+                if (pPresentModes.get(i) == VK_PRESENT_MODE_MAILBOX_KHR) {
+                    swapchainPresentMode = VK_PRESENT_MODE_MAILBOX_KHR;
+                    break;
+                }
+                if ((swapchainPresentMode != VK_PRESENT_MODE_MAILBOX_KHR) && (pPresentModes.get(i) == VK_PRESENT_MODE_IMMEDIATE_KHR)) {
+                    swapchainPresentMode = VK_PRESENT_MODE_IMMEDIATE_KHR;
+                }
             }
         }
+        
         memFree(pPresentModes);
 
         // Determine the number of images
