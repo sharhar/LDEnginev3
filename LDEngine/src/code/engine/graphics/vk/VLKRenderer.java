@@ -2,6 +2,8 @@ package code.engine.graphics.vk;
 
 import static org.lwjgl.glfw.GLFW.*;
 
+import java.awt.image.BufferedImage;
+
 import code.engine.graphics.Model;
 import code.engine.graphics.Renderable;
 import code.engine.graphics.Renderer;
@@ -55,5 +57,9 @@ public class VLKRenderer extends Renderer{
 	
 	public Renderable createRenderable(Model model, Shader shader, Vector2f pos, float rot, Vector2f size, Texture texture) {
 		return new VLKRenderable(this, model, shader, pos, rot, size, texture);
+	}
+	
+	public Texture createTexture(BufferedImage image) {
+		return new VLKTexture(this, image);
 	}
 }

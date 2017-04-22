@@ -12,4 +12,8 @@ public class Vector2f {
 		this.x = 0;
 		this.y = 0;
 	}
+	
+	public Vector2f add(Vector2f other) {
+		return new Vector2f(other.x + x, other.y + y);
+	}
 }

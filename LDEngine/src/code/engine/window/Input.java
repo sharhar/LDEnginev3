@@ -15,4 +15,5 @@ public class Input {
 			keys[i] = false;
 		}
 	}
+	
 }

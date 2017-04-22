@@ -3,6 +3,7 @@ package code.engine.graphics.gl;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL13.*;
 
+import java.awt.image.BufferedImage;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.IntBuffer;
@@ -17,6 +18,10 @@ public class GLTexture extends Texture{
 	
 	public GLTexture(Renderer renderer, String path) {
 		super(renderer, path);
+	}
+	
+	public GLTexture(Renderer renderer, BufferedImage img) {
+		super(renderer, img);
 	}
 
 	protected void init() {

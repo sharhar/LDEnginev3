@@ -58,6 +58,9 @@ public class VLK {
 		public long[] framebuffers;
 		public long renderPass;
 		
+		public int width;
+		public int height;
+		
 		LongBuffer pSwapchains = memAllocLong(1);
         LongBuffer pImageAcquiredSemaphore = memAllocLong(1);
         LongBuffer pRenderCompleteSemaphore = memAllocLong(1);
@@ -414,15 +417,15 @@ public class VLK {
         
         glfwGetWindowSize(window, widthAr, heightAr);
         
-        int width = widthAr[0];
-        int height = heightAr[0];
+        swapChain.width = widthAr[0];
+        swapChain.height = heightAr[0];
         
         VkExtent2D currentExtent = surfCaps.currentExtent();
         int currentWidth = currentExtent.width();
         int currentHeight = currentExtent.height();
         if (currentWidth != -1 && currentHeight != -1) {
-            width = currentWidth;
-            height = currentHeight;
+        	swapChain.width = currentWidth;
+        	swapChain. height = currentHeight;
         }
 
         int preTransform;
@@ -450,8 +453,8 @@ public class VLK {
                 .clipped(true)
                 .compositeAlpha(VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR);
         swapchainCI.imageExtent()
-                .width(width)
-                .height(height);
+                .width(swapChain.width)
+                .height(swapChain.height);
         LongBuffer pSwapChain = memAllocLong(1);
         VLKCheck(vkCreateSwapchainKHR(device.device, swapchainCI, null, pSwapChain), 
         		"Failed to create swapchain");
@@ -555,8 +558,8 @@ public class VLK {
                 .sType(VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO)
                 .pAttachments(frattachments)
                 .flags(VK_FLAGS_NONE)
-                .height(height)
-                .width(width)
+                .height(swapChain.height)
+                .width(swapChain.width)
                 .layers(1)
                 .pNext(NULL)
                 .renderPass(swapChain.renderPass);
@@ -607,8 +610,8 @@ public class VLK {
                 .x(0)
                 .y(0);
         renderArea.extent()
-                .width(800)
-                .height(600);
+                .width(swapChain.width)
+                .height(swapChain.height);
         
         vkCreateSemaphore(device.device, semaphoreCreateInfo, null, swapChain.pImageAcquiredSemaphore);
         vkCreateSemaphore(device.device, semaphoreCreateInfo, null, swapChain.pRenderCompleteSemaphore);
@@ -648,8 +651,8 @@ public class VLK {
         vkCmdBeginRenderPass(device.commandBuffer, renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
         
         VkViewport.Buffer viewport = VkViewport.calloc(1)
-                .height(600)
-                .width(800)
+                .height(swapChain.height)
+                .width(swapChain.width)
                 .minDepth(0.0f)
                 .maxDepth(1.0f);
         vkCmdSetViewport(device.commandBuffer, 0, viewport);
@@ -657,8 +660,8 @@ public class VLK {
 
         VkRect2D.Buffer scissor = VkRect2D.calloc(1);
         scissor.extent()
-                .width(800)
-                .height(600);
+                .width(swapChain.width)
+                .height(swapChain.height);
         scissor.offset()
                 .x(0)
                 .y(0);

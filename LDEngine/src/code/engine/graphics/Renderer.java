@@ -1,5 +1,7 @@
 package code.engine.graphics;
 
+import java.awt.image.BufferedImage;
+
 import code.engine.graphics.Font.FontChar;
 import code.engine.math.Vector2f;
 import code.engine.math.Vector4f;
@@ -18,6 +20,7 @@ public abstract class Renderer {
 	abstract public Model createModel(float[] data);
 	abstract public Shader createShader(String vertPath, String fragPath);
 	abstract public Texture createTexture(String path);
+	abstract public Texture createTexture(BufferedImage image);
 	abstract public Renderable createRenderable(Model model, Shader shader, Vector2f pos, float rot, Vector2f size, Texture texture);
 	
 	public Renderable createText(Shader shader, Font font, Texture texture, String text, float xOff, float yOff, float size) {

@@ -62,4 +62,9 @@ public class Sound {
 	public void stop() {
 		alSourceStop(source);
 	}
+	
+	public void destroy() {
+		alDeleteBuffers(buffer);
+		alDeleteSources(source);
+	}
 }

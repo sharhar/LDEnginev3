@@ -3,6 +3,7 @@ package code.engine.graphics.vk;
 import static org.lwjgl.system.MemoryUtil.*;
 import static org.lwjgl.vulkan.VK10.*;
 
+import java.awt.image.BufferedImage;
 import java.nio.IntBuffer;
 import java.nio.LongBuffer;
 
@@ -22,6 +23,10 @@ public class VLKTexture extends Texture{
 	
 	public VLKTexture(Renderer renderer, String path) {
 		super(renderer, path);
+	}
+	
+	public VLKTexture(Renderer renderer, BufferedImage img) {
+		super(renderer, img);
 	}
 
 	protected void init() {

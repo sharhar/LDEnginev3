@@ -34,8 +34,8 @@ abstract public class Renderable {
 	}
 	
 	public void render() {
-		float c = (float)Math.cos(Math.toRadians(rot));
-		float s = (float)Math.sin(Math.toRadians(rot));
+		float c = (float)Math.cos(rot);
+		float s = (float)Math.sin(rot);
 		
 		modelview[0] = size.x * c;
 		modelview[1] = size.x * s;

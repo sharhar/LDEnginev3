@@ -3,6 +3,8 @@ package code.engine.graphics.gl;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
 
+import java.awt.image.BufferedImage;
+
 import org.lwjgl.opengl.GL;
 
 import code.engine.graphics.Model;
@@ -71,5 +73,9 @@ public class GLRenderer extends Renderer{
 	
 	public Renderable createRenderable(Model model, Shader shader, Vector2f pos, float rot, Vector2f size, Texture texture) {
 		return new GLRenderable(this, model, shader, pos, rot, size, texture);
+	}
+	
+	public Texture createTexture(BufferedImage image) {
+		return new GLTexture(this, image);
 	}
 }
