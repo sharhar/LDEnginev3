@@ -22,7 +22,6 @@ public class Player {
 	public float fireTime = 0;
 	
 	public boolean caught = true;
-	public boolean moveLock = false;
 	public boolean fly = false;
 	public boolean space = false;
 	
@@ -32,13 +31,12 @@ public class Player {
 	}
 	
 	public void update() {
-		if(Input.keys[GLFW_KEY_Z] && !moveLock && !fly) {
-			move = -move;
-			moveLock = true;
+		if(Input.keys[GLFW_KEY_A] && !fly) {
+			move = -1;
 		}
 		
-		if(!Input.keys[GLFW_KEY_Z]) {
-			moveLock = false;
+		if(Input.keys[GLFW_KEY_D] && !fly) {
+			move = 1;
 		}
 		
 		if(fly) {
@@ -53,6 +51,11 @@ public class Player {
 				float dx = renderable.pos.x - planet.pos.x;
 				float dy = renderable.pos.y - planet.pos.y;
 				float dist = (float) Math.sqrt(dx*dx + dy*dy);
+				
+				if(dist <= planetR + renderable.size.y /2) {
+					Main.screen = 2;
+					return;
+				}
 					
 				if(dist <= planetR + planet.gravityRad + renderable.size.y /2) {
 					found = true;
@@ -67,7 +70,7 @@ public class Player {
 						float newAngle = (float)Math.atan(dy/dx);
 						newAngle = (float) (dx < 0 ? Math.PI-newAngle : -newAngle);
 							
-						setPlanet(planet, newAngle + (float)Math.PI/2, 10);
+						setPlanet(planet, newAngle + (float)Math.PI/2, dist - planetR - renderable.size.y /2);
 						
 						move = Math.signum(newAngle - newAnglep);
 							

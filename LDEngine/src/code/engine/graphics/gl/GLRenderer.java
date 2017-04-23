@@ -20,6 +20,8 @@ public class GLRenderer extends Renderer{
 	long window = 0;
 	
 	public Window createWindowandContext(int width, int height, String title, boolean debug, boolean vSync) {
+		glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+		
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 

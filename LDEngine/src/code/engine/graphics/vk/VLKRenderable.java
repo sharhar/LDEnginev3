@@ -226,6 +226,27 @@ public class VLKRenderable extends Renderable{
         
         updateSettings();
 	}
+	
+	public void updateTexture(Texture texture) {
+		this.texture = texture;
+		this.vtex = (VLKTexture)texture;
+		
+
+        VkDescriptorImageInfo.Buffer tex_desc = VkDescriptorImageInfo.calloc(1)
+				.sampler(vtex.texsampler)
+				.imageView(vtex.texview)
+				.imageLayout(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+        
+        VkWriteDescriptorSet.Buffer tex_write = VkWriteDescriptorSet.calloc(1)
+    			.sType(VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET)
+    			.dstSet(descriptorSet)
+    			.descriptorType(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER)
+    			.pImageInfo(tex_desc)
+    			.dstBinding(1)
+    			.dstArrayElement(0);
+
+    	vkUpdateDescriptorSets(vrc.device.device, tex_write, null);
+	}
 
 	public void applyUniforms() {
 		PointerBuffer pData = memAllocPointer(1);

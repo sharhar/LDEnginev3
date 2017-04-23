@@ -154,6 +154,7 @@ public class VLK {
 	}
 
 	public static void destroyContext(VLKContext context) {
+		
 		vkDestroyDebugReportCallbackEXT(context.instance, context.debug, null);
 	}
 	

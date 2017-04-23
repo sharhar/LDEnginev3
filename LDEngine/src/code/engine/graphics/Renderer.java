@@ -53,16 +53,16 @@ public abstract class Renderer {
 			float sc = size / font.fontChars[chid].height;
 			
 			float x1 = xOff + cursorPos;
-			float y1 = yOff + font.fontChars[chid].height*sc;
-			float x2 = xOff + cursorPos + font.fontChars[chid].width*sc;
+			float y1 = yOff + fontChar.height*sc;
+			float x2 = xOff + cursorPos + fontChar.width*sc;
 			float y2 = yOff;
-
+			
 			float tx1 = fontChar.x1tex;
 			float ty1 = fontChar.y1tex;
 			float tx2 = fontChar.x2tex;
 			float ty2 = fontChar.y2tex;
 			
-			cursorPos += font.fontChars[chid].width*sc + font.fontChars[chid].xadvance*sc/2;
+			cursorPos += fontChar.width*sc + fontChar.xadvance*sc/2;
 
 			verts[i * 24 + 0] = x1;
 			verts[i * 24 + 1] = y1;

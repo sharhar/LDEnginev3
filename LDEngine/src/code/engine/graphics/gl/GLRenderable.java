@@ -41,4 +41,9 @@ public class GLRenderable extends Renderable{
 	public void updateSettings() {
 		
 	}
+	
+	public void updateTexture(Texture texture) {
+		this.texture = texture;
+		this.gtx = (GLTexture)texture;
+	}
 }

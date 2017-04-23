@@ -66,4 +66,5 @@ abstract public class Renderable {
 	abstract protected void init();
 	abstract public void applyUniforms();
 	abstract public void updateSettings();
+	abstract public void updateTexture(Texture texture);
 }

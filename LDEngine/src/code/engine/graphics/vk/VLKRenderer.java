@@ -17,13 +17,17 @@ public class VLKRenderer extends Renderer{
 	VLK.VLKContext context = null;
 	VLK.VLKDevice device = null;
 	VLK.VLKSwapChain swapChain = null;
+	boolean debug;
 	
 	public Window createWindowandContext(int width, int height, String title, boolean debug, boolean vSync) {
 		glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+		glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 		window = glfwCreateWindow(width, height, title, 0, 0);
 		context = VLK.createContext(debug);
 		device = VLK.createDevice(context);
 		swapChain = VLK.createSwapChain(context, device, window, vSync);
+		
+		this.debug = debug;
 		
 		this.width = width;
 		this.height = height;
@@ -40,7 +44,9 @@ public class VLKRenderer extends Renderer{
 	}
 	
 	public void destory() {
-		VLK.destroyContext(context);
+		if(debug) {
+			VLK.destroyContext(context);
+		}	
 	}
 	
 	public Model createModel(float[] data) {
