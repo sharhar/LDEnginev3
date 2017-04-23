@@ -69,6 +69,7 @@ public class Main {
 	public static float dt;
 	public static Planet[] planets;
 	public static int screen = 0;
+	public static ArrayList<Laser> lasers = new ArrayList<Laser>();
 	
 	public static void main(String[] args) {
 		glfwInit();
@@ -166,6 +167,7 @@ public class Main {
 		Texture circleTex = renderer.createTexture(planetImage);
 		Texture titleTex = renderer.createTexture("res/Title.png");
 		Texture bgTex = renderer.createTexture(bgImage);
+		Texture laserTex = renderer.createTexture(squareImage);
 		Texture startMessageTex = renderer.createTexture("res/StartText.png");
 		Texture[] tutorialTexs = new Texture[8];
 		tutorialTexs[0] = renderer.createTexture("res/Tutorial0.png");
@@ -212,6 +214,12 @@ public class Main {
 		player.update();
 		
 		player.caught = false;
+
+		PoPo.popoTexture = popoTex;
+		PoPo.player = player;
+		PoPo.fireTexture = fTex;
+		
+		Laser.laserTexture = laserTex;
 		
 		ArrayList<PoPo> popos = new ArrayList<PoPo>();
 		
@@ -263,7 +271,7 @@ public class Main {
 			} else if (screen == 1) {
 				tutorialTime += dt;
 				
-				if(Input.keys[GLFW_KEY_K]) {
+				if(Input.keys[GLFW_KEY_K] && renderTutorial) {
 					renderTutorial = false;
 					tutorialTime = 10;
 					currentTutorial = tutorialTexs.length + 1;
@@ -285,10 +293,18 @@ public class Main {
 					
 					if(currentTutorial >= tutorialTexs.length) {
 						renderTutorial = false;
-						popos.add(new PoPo(new Vector2f(), new Vector2f(25, 25), popoTex));
+						popos.add(new PoPo());
 					} else {
 						tutorial.updateTexture(tutorialTexs[currentTutorial]);
 					}
+				}
+				
+				for(PoPo popo : popos) {
+					popo.update();
+				}
+				
+				for(Laser laser : lasers) {
+					laser.update();
 				}
 				
 				if(Input.keys[GLFW_KEY_SPACE]) {
@@ -321,6 +337,10 @@ public class Main {
 				
 				for(PoPo popo : popos) {
 					popo.render();
+				}
+				
+				for(Laser laser : lasers) {
+					laser.render();
 				}
 				
 				player.render();

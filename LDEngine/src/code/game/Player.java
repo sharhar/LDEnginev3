@@ -24,6 +24,7 @@ public class Player {
 	public boolean caught = true;
 	public boolean fly = false;
 	public boolean space = false;
+	public boolean shotLock = false;
 	
 	public Player(Vector2f pos, Vector2f size, Texture texture, Texture fireTexture) {
 		renderable = Main.renderer.createRenderable(Main.model, Main.shader, pos, 0, size, texture);
@@ -38,6 +39,11 @@ public class Player {
 		if(Input.keys[GLFW_KEY_D] && !fly) {
 			move = 1;
 		}
+		
+		if(Input.keys[GLFW_KEY_UP] && !shotLock && !Input.keys[GLFW_KEY_LEFT_SHIFT]) {
+			Main.lasers.add(new Laser(renderable.pos, renderable.rot + (float)Math.PI));
+		}
+		
 		
 		if(fly) {
 			renderable.pos = renderable.pos.add(new Vector2f((float)Math.sin(planetAngle + move * (float)Math.PI/2) * 200 * Main.dt, 
